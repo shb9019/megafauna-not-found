@@ -22,7 +22,7 @@ module.exports = () => {
 
   gulp.task('copy', () => {
     let pipeline;
-    return pipeline = gulp.src(['public/*.*'], {base: './'})
+    return pipeline = gulp.src(['public/*.*', 'public/assets/*.*'], {base: './'})
         .pipe(gulp.dest('dist'));
   });
 
