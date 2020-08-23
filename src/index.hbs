@@ -12,12 +12,14 @@
     {{/if}}
   </head>
   <body>
+    <canvas style='position:absolute; left:0; top:0;'></canvas>
     {{#if js}}
       <script>
         {{{ js }}}
       </script>
     {{else}}
-      <script src='main.js'></script>
+        <script src="public/kontra.js"></script>
+        <script src='main.js'></script>
     {{/if}}
   </body>
 </html>
