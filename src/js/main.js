@@ -1,9 +1,11 @@
 let { init, Sprite, SpriteSheet, GameLoop, TileEngine } = kontra;
-import { calculateAngle } from './helper';
+import { calculateAngle, initializeMap } from './helper';
+import { Terrain } from './objects/terrain';
 
 let { canvas } = init();
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+let minEdgeSize = Math.min(window.innerWidth, window.innerHeight);
+canvas.width = minEdgeSize;
+canvas.height = minEdgeSize;
 
 let idleSprite = new Image();
 idleSprite.src = 'public/assets/idle.png';
@@ -11,31 +13,26 @@ idleSprite.src = 'public/assets/idle.png';
 let walkSprite = new Image();
 walkSprite.src = 'public/assets/walk.png';
 
-let tileImage = new Image();
-tileImage.src = 'public/assets/grass.png';
+let grassTile = new Image();
+grassTile.src = 'public/assets/grass.png';
 
-tileImage.onload = () => {
+let fireTile = new Image();
+fireTile.src = 'public/assets/fire.png';
 
-    let tileEngine = TileEngine({
-        // tile size
-        tilewidth: 10,
-        tileheight: 10,
+let burntTile = new Image();
+burntTile.src = 'public/assets/burnt.png';
 
-        // map size in tiles
-        width: 10,
-        height: 10,
-
-        // tileset object
-        tilesets: [{
-            firstgid: 1,
-            image: tileImage
-        }],
-    });
+grassTile.onload = () => {
 
     let mouse = {
         x: canvas.width,
         y: canvas.height
     };
+
+    let mapSize = 100;
+    let map = initializeMap(mapSize);
+
+    let terrain = Terrain(canvas, grassTile, fireTile, burntTile);
 
     let idleSpriteSheet = SpriteSheet({
         image: idleSprite,
@@ -65,11 +62,10 @@ tileImage.onload = () => {
         x: 32,
         y: 32,
         anchor: {x: 0.5, y: 0.5},
-        // required for an animation sprite
         animations: idleSpriteSheet.animations
     });
-    tileEngine.addObject(sprite);
 
+    // TODO: Use keyboard API of Kontra 
     window.onmousemove = (e) => {
         mouse.x = e.clientX;
         mouse.y = e.clientY;
@@ -97,7 +93,7 @@ tileImage.onload = () => {
             sprite.update();
         },
         render: () => { // render the game state
-            tileEngine.render();
+            terrain.renderTerrain(map);
             sprite.render();
         }
     });
