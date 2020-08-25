@@ -24,11 +24,6 @@ burntTile.src = 'public/assets/burnt.png';
 
 grassTile.onload = () => {
 
-    let mouse = {
-        x: canvas.width,
-        y: canvas.height
-    };
-
     let mapSize = 100;
 
     let terrain = Terrain(canvas, mapSize, grassTile, fireTile, burntTile);
@@ -65,31 +60,54 @@ grassTile.onload = () => {
         animations: idleSpriteSheet.animations
     });
 
-    // TODO: Use keyboard API of Kontra 
-    window.onmousemove = (e) => {
-        mouse.x = e.clientX;
-        mouse.y = e.clientY;
-    }
-
     window.onkeydown = (e)  => {
-        if (e.key === "w" || e.key === "ArrowUp") {
-            sprite.dx = Math.cos(sprite.rotation) * 2.0;
-            sprite.dy = Math.sin(sprite.rotation) * 2.0;
+        if (e.key === "d" || e.key === "ArrowRight") {
+            sprite.dx = Math.min(2.0, sprite.dx + 2.0);
+            sprite.animations = walkSpriteSheet.animations;
+        } else if (e.key === "a" || e.key === "ArrowLeft") {
+            sprite.dx = Math.max(-2.0, sprite.dx - 2.0);
+            sprite.animations = walkSpriteSheet.animations;
+        } else if (e.key === "w" || e.key === "ArrowUp") {
+            sprite.dy = Math.max(-2.0, sprite.dy - 2.0);
+            sprite.animations = walkSpriteSheet.animations;
+        } else if (e.key === "s" || e.key === "ArrowDown") {
+            sprite.dy = Math.min(2.0, sprite.dy + 2.0);
             sprite.animations = walkSpriteSheet.animations;
         }
     }
 
     window.onkeyup = (e) => {
-        if (e.key === "w" || e.key === "ArrowUp") {
-            sprite.dx = 0;
-            sprite.dy = 0;
+        if (e.key === "d" || e.key === "ArrowRight") {
+            sprite.dx = Math.max(0, sprite.dx - 2.0);
             sprite.animations = idleSpriteSheet.animations;
+        } else if (e.key === "a" || e.key === "ArrowLeft") {
+            sprite.dx = Math.min(0, sprite.dx + 2.0);
+            sprite.animations = idleSpriteSheet.animations;
+        } else if (e.key === "w" || e.key === "ArrowUp") {
+            sprite.dy = Math.min(0, sprite.dy + 2.0);
+            sprite.animations = walkSpriteSheet.animations;
+        } else if (e.key === "s" || e.key === "ArrowDown") {
+            sprite.dy = Math.max(0, sprite.dy - 2.0);
+            sprite.animations = walkSpriteSheet.animations;
         }
     }
 
     let loop = GameLoop({  // create the main game loop
         update: (dt) => { // update the game state
-            sprite.rotation = calculateAngle(sprite.x, sprite.y, mouse.x, mouse.y);
+            if (sprite.dx != 0 || sprite.dy != 0) {
+                sprite.rotation = calculateAngle(sprite.dx, sprite.dy);
+                if ((sprite.dx > 0) && ((sprite.x + 32) == canvas.width)) {
+                    sprite.dx = 0;
+                } else if ((sprite.dx < 0) && ((sprite.x - 32) == 0)) {
+                    sprite.dx = 0;
+                }
+
+                if ((sprite.dy > 0) && ((sprite.y + 32) == canvas.height)) {
+                    sprite.dy = 0;
+                } else if ((sprite.dy < 0) && ((sprite.y - 32) == 0)) {
+                    sprite.dy = 0;
+                }
+            }
             terrain.updateTerrain();
             sprite.update();
         },
