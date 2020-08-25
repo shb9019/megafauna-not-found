@@ -1,5 +1,5 @@
 let { init, Sprite, SpriteSheet, GameLoop, TileEngine } = kontra;
-import { calculateAngle, initializeMap } from './helper';
+import { calculateAngle } from './helper';
 import { Terrain } from './objects/terrain';
 
 let { canvas } = init();
@@ -30,9 +30,9 @@ grassTile.onload = () => {
     };
 
     let mapSize = 100;
-    let map = initializeMap(mapSize);
 
-    let terrain = Terrain(canvas, grassTile, fireTile, burntTile);
+    let terrain = Terrain(canvas, mapSize, grassTile, fireTile, burntTile);
+    terrain.initializeTerrain();
 
     let idleSpriteSheet = SpriteSheet({
         image: idleSprite,
@@ -88,12 +88,13 @@ grassTile.onload = () => {
     }
 
     let loop = GameLoop({  // create the main game loop
-        update: () => { // update the game state
+        update: (dt) => { // update the game state
             sprite.rotation = calculateAngle(sprite.x, sprite.y, mouse.x, mouse.y);
+            terrain.updateTerrain();
             sprite.update();
         },
         render: () => { // render the game state
-            terrain.renderTerrain(map);
+            terrain.renderTerrain();
             sprite.render();
         }
     });

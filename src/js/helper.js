@@ -8,15 +8,3 @@ export const renderTiles = (tileImage, context, minEdgeSize) => {
 	context.fillStyle = pattern;
 	context.fill();
 }
-
-export const initializeMap = (mapSize) => {
-	let map = [];
-	for (let i = 0; i < mapSize; i++) {
-		let row = [];
-		for (let j = 0; j < mapSize; j++) {
-			row.push(0);
-		}
-		map.push(row);
-	}
-	return map;
-}
