@@ -46,9 +46,10 @@ grassTile.onload = () => {
             updateOrigin(lion.absPosition(), mapSize * tileSizePx, mapSize * tileSizePx, origin);
             lion.update(origin);
             terrain.updateTerrain();
+            
+            let map = terrain.getMap();
+            lion.fireDamage(map);
             if (didLionBlow) {
-                console.log("Here");
-                let map = terrain.getMap();
                 terrain.handleLionBlow(lion.blow(map));
                 didLionBlow = false;
             }

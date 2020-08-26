@@ -35,6 +35,11 @@ export const Lion = (numTiles, tileSizePx, idleSprite, walkSprite, setLionBlow) 
     
     const speed = 5.0;
     const blowRange = 10;
+    const blowTimeout = 5000;
+    let lastBlowTime = 0;
+
+    let health = 100;
+    const fireDamage = 2;
 
     const sprite = Sprite({
         x: absolutePosition.x,
@@ -44,18 +49,21 @@ export const Lion = (numTiles, tileSizePx, idleSprite, walkSprite, setLionBlow) 
     });
 
 
+    // FIXME: In some cases, the key gets stuck i.e., keeps moving in a direciton.
 	let map = {}; // You could also use an array
 
 	window.onkeyup = (e) => {
-		map[e.key] = false;	
+		map[e.key] = false;
 	}
     
     window.onkeydown = (e) => {
 	    map[e.key] = true;
 
-	    console.log(e.key);
 	    if (e.key == " ") {
-	    	setLionBlow();
+	    	if ((Date.now() - lastBlowTime) >= blowTimeout) {
+	    		setLionBlow();
+	    		lastBlowTime = Date.now();
+	    	}
 	    }
     };
 
@@ -98,8 +106,8 @@ export const Lion = (numTiles, tileSizePx, idleSprite, walkSprite, setLionBlow) 
 
     let tilePosition = () => {
     	return {
-    		x: (absolutePosition.x / tileSizePx),
-    		y: (absolutePosition.y / tileSizePx)
+    		x: Math.floor(absolutePosition.x / tileSizePx),
+    		y: Math.floor(absolutePosition.y / tileSizePx)
     	};
     }
 
@@ -126,8 +134,6 @@ export const Lion = (numTiles, tileSizePx, idleSprite, walkSprite, setLionBlow) 
     lionInterface.blow = (map) => {
     	const returnMap = JSON.parse(JSON.stringify(map));
     	let position = tilePosition();
-    	position.x = Math.floor(position.x);
-    	position.y = Math.floor(position.y);
 
     	for (let i = Math.max(0, position.x - blowRange); i <= Math.min(numTiles - 1, position.x + blowRange); i++) {
     		for (let j = Math.max(0, position.y - blowRange); j <= Math.min(numTiles - 1, position.y + blowRange); j++) {
@@ -138,6 +144,13 @@ export const Lion = (numTiles, tileSizePx, idleSprite, walkSprite, setLionBlow) 
     	}
 
     	return returnMap;
+    }
+
+    lionInterface.fireDamage = (map) => {
+    	let position = tilePosition();
+    	if (map[position.x][position.y] == 1) {
+    		health -= fireDamage;
+    	}
     }
 
     return lionInterface;

@@ -5,7 +5,7 @@ export const Terrain = (canvas, mapSize, grassTile, fireTile, burntTile) => {
 	const pixelsPerTile = 25;
 	let currentTime = Date.now();
 	// in milliseconds
-	const fireSpreadRate = 5000;
+	const fireSpreadRate = 2000;
 
 	terrainObject.getMap = () => {
 		return map;

@@ -27,13 +27,13 @@ export const MiniMap = (context, numTiles) => {
 					context.fillRect(startX + (2 * i), startY + (2 * j), 2, 2);
 				}
 			}
-		}	
+		}
 	}
 
 	miniMapInterface.render = (lionPosition, map) => {
 		 drawBoundingBox();
-		 drawLionBlip(lionPosition);
 		 drawFireBlips(map);
+		 drawLionBlip(lionPosition);
 	}
 
 	return miniMapInterface; 
