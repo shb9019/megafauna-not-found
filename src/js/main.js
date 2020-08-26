@@ -2,8 +2,9 @@ let { init, Sprite, SpriteSheet, GameLoop, TileEngine } = kontra;
 import { calculateAngle, updateOrigin } from './helper';
 import { Terrain } from './objects/terrain';
 import { Lion } from './objects/lion';
+import { MiniMap } from './objects/minimap';
 
-let { canvas } = init();
+let { canvas, context } = init();
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
@@ -32,6 +33,7 @@ grassTile.onload = () => {
     let lion = Lion(2500, idleSprite, walkSprite);
     let terrain = Terrain(canvas, mapSize, grassTile, fireTile, burntTile);
     terrain.initializeTerrain();
+    let miniMap = MiniMap(context, mapSize);
 
     let loop = GameLoop({  // create the main game loop
         update: (dt) => { // update the game state
@@ -42,6 +44,7 @@ grassTile.onload = () => {
         render: () => { // render the game state
             terrain.renderTerrain(origin);
             lion.render();
+            miniMap.render(lion.absPosition(), terrain.getMap());
         }
     });
 

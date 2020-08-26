@@ -32,7 +32,7 @@ export const Lion = (mapSizePx, idleSprite, walkSprite) => {
     	y: 32
     };
     
-    const speed = 10.0;
+    const speed = 5.0;
 
     const sprite = Sprite({
         x: absolutePosition.x,
@@ -70,7 +70,6 @@ export const Lion = (mapSizePx, idleSprite, walkSprite) => {
     };
 
     let updateRotation = () => {
-    	console.log(sprite.rotation, map);
     	if (map["d"] && map["s"]) {
     		sprite.rotation = Math.PI / 4;
     	} else if (map["d"] && map["w"]) {

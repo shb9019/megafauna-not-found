@@ -7,6 +7,10 @@ export const Terrain = (canvas, mapSize, grassTile, fireTile, burntTile) => {
 	// in milliseconds
 	const fireSpreadRate = 5000;
 
+	terrainObject.getMap = () => {
+		return map;
+	};
+
 	terrainObject.initializeTerrain = () => {
 		for (let i = 0; i < mapSize; i++) {
 			let row = [];
@@ -30,7 +34,7 @@ export const Terrain = (canvas, mapSize, grassTile, fireTile, burntTile) => {
 				}
 			}
 		}
-	}
+	};
 
 	terrainObject.updateTerrain = () => {
 		if (((Date.now() - currentTime) < fireSpreadRate)) {
