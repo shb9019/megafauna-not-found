@@ -2,8 +2,7 @@ export const Terrain = (canvas, mapSize, grassTile, fireTile, burntTile) => {
 	const terrainObject = {};
 	let map = [];
 	const context = canvas.getContext("2d");
-	const sizeInPixel = canvas.width;
-	const pixelsPerTile = sizeInPixel / mapSize;
+	const pixelsPerTile = 25;
 	let currentTime = Date.now();
 	// in milliseconds
 	const fireSpreadRate = 5000;
@@ -19,15 +18,15 @@ export const Terrain = (canvas, mapSize, grassTile, fireTile, burntTile) => {
 		map[mapSize/2][mapSize/2] = 1;
 	}
 
-	terrainObject.renderTerrain = () => {
+	terrainObject.renderTerrain = (origin) => {
 		for (let i = 0; i < mapSize; i++) {
 			for (let j = 0; j < mapSize; j++) {
 				if (map[i][j] == 0) {
-					context.drawImage(grassTile, i*pixelsPerTile, j*pixelsPerTile, pixelsPerTile, pixelsPerTile);
+					context.drawImage(grassTile, origin.x + (i*pixelsPerTile), origin.y + (j*pixelsPerTile), pixelsPerTile, pixelsPerTile);
 				} else if (map[i][j] == 1) {
-					context.drawImage(fireTile, i*pixelsPerTile, j*pixelsPerTile, pixelsPerTile, pixelsPerTile);
+					context.drawImage(fireTile, origin.x + (i*pixelsPerTile), origin.y + (j*pixelsPerTile), pixelsPerTile, pixelsPerTile);
 				} else if (map[i][j] == 2) {
-					context.drawImage(burntTile, i*pixelsPerTile, j*pixelsPerTile, pixelsPerTile, pixelsPerTile);
+					context.drawImage(burntTile, origin.x + (i*pixelsPerTile), origin.y + (j*pixelsPerTile), pixelsPerTile, pixelsPerTile);
 				}
 			}
 		}

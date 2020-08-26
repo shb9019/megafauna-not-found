@@ -1,11 +1,10 @@
 let { init, Sprite, SpriteSheet, GameLoop, TileEngine } = kontra;
-import { calculateAngle } from './helper';
+import { calculateAngle, updateOrigin } from './helper';
 import { Terrain } from './objects/terrain';
 
 let { canvas } = init();
-let minEdgeSize = Math.min(window.innerWidth, window.innerHeight);
-canvas.width = minEdgeSize;
-canvas.height = minEdgeSize;
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
 let idleSprite = new Image();
 idleSprite.src = 'public/assets/idle.png';
@@ -25,6 +24,10 @@ burntTile.src = 'public/assets/burnt.png';
 grassTile.onload = () => {
 
     let mapSize = 100;
+    let origin = {
+        x: 0,
+        y: 0
+    };
 
     let terrain = Terrain(canvas, mapSize, grassTile, fireTile, burntTile);
     terrain.initializeTerrain();
@@ -108,11 +111,12 @@ grassTile.onload = () => {
                     sprite.dy = 0;
                 }
             }
-            terrain.updateTerrain();
+
             sprite.update();
+            updateOrigin(sprite.x, sprite.y, 2500, 2500, origin);
         },
         render: () => { // render the game state
-            terrain.renderTerrain();
+            terrain.renderTerrain(origin);
             sprite.render();
         }
     });
