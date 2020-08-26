@@ -10,8 +10,8 @@ export const MiniMap = (context, numTiles) => {
 	}
 
 	let drawLionBlip = (lionPosition) => {
-		let x = startX + ((lionPosition.x / 25) * 2);
-		let y = startY + ((lionPosition.y / 25) * 2);
+		let x = startX + (lionPosition.x * 2);
+		let y = startY + (lionPosition.y * 2);
 		context.fillStyle = "#FFFF00";
 		context.fillRect(x - 1, y - 1, 4, 4); 
 	}
@@ -21,7 +21,7 @@ export const MiniMap = (context, numTiles) => {
 			for (let j = 0; j < numTiles; j++) {
 				if (map[i][j] == 1) {
 					context.fillStyle = "#FFA500";
-					context.fillRect(startX + (2 * i), startY + (2 * j), 2, 2);				
+					context.fillRect(startX + (2 * i), startY + (2 * j), 2, 2);
 				} else if (map[i][j] == 2) {
 					context.fillStyle = "#8B4513";
 					context.fillRect(startX + (2 * i), startY + (2 * j), 2, 2);

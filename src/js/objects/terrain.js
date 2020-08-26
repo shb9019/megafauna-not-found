@@ -69,5 +69,9 @@ export const Terrain = (canvas, mapSize, grassTile, fireTile, burntTile) => {
 		map = JSON.parse(JSON.stringify(updatedMap));
 	}
 
+	terrainObject.handleLionBlow = (updatedMap) => {
+		map = JSON.parse(JSON.stringify(updatedMap));
+	}
+
 	return terrainObject;
 }

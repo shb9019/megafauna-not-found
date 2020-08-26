@@ -1,7 +1,8 @@
 let { Sprite, SpriteSheet } = kontra;
 
-export const Lion = (mapSizePx, idleSprite, walkSprite) => {
+export const Lion = (numTiles, tileSizePx, idleSprite, walkSprite, setLionBlow) => {
 	const lionInterface = {};
+	const mapSizePx = numTiles * tileSizePx;
 
     const idleSpriteSheet = SpriteSheet({
         image: idleSprite,
@@ -33,6 +34,7 @@ export const Lion = (mapSizePx, idleSprite, walkSprite) => {
     };
     
     const speed = 5.0;
+    const blowRange = 10;
 
     const sprite = Sprite({
         x: absolutePosition.x,
@@ -50,6 +52,11 @@ export const Lion = (mapSizePx, idleSprite, walkSprite) => {
     
     window.onkeydown = (e) => {
 	    map[e.key] = true;
+
+	    console.log(e.key);
+	    if (e.key == " ") {
+	    	setLionBlow();
+	    }
     };
 
     let updatePosition = () => {
@@ -89,6 +96,13 @@ export const Lion = (mapSizePx, idleSprite, walkSprite) => {
     	}
     };
 
+    let tilePosition = () => {
+    	return {
+    		x: (absolutePosition.x / tileSizePx),
+    		y: (absolutePosition.y / tileSizePx)
+    	};
+    }
+
     lionInterface.update = (origin) => {
     	updatePosition();
     	updateRotation();
@@ -103,6 +117,27 @@ export const Lion = (mapSizePx, idleSprite, walkSprite) => {
 
     lionInterface.absPosition = () => {
     	return absolutePosition;
+    }
+
+    lionInterface.tilePosition = () => {
+    	return tilePosition();
+    }
+
+    lionInterface.blow = (map) => {
+    	const returnMap = JSON.parse(JSON.stringify(map));
+    	let position = tilePosition();
+    	position.x = Math.floor(position.x);
+    	position.y = Math.floor(position.y);
+
+    	for (let i = Math.max(0, position.x - blowRange); i <= Math.min(numTiles - 1, position.x + blowRange); i++) {
+    		for (let j = Math.max(0, position.y - blowRange); j <= Math.min(numTiles - 1, position.y + blowRange); j++) {
+    			if (returnMap[i][j] == 1) {
+    				returnMap[i][j] = 2;
+    			}
+    		}
+    	}
+
+    	return returnMap;
     }
 
     return lionInterface;

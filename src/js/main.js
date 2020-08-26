@@ -25,26 +25,38 @@ burntTile.src = 'public/assets/burnt.png';
 
 grassTile.onload = () => {
     let mapSize = 100;
+    let tileSizePx = 25;
     let origin = {
         x: 0,
         y: 0
     };
+    let didLionBlow = false;
 
-    let lion = Lion(2500, idleSprite, walkSprite);
+    let setLionBlow = () => {
+        didLionBlow = true;
+    };
+
+    let lion = Lion(mapSize, tileSizePx, idleSprite, walkSprite, setLionBlow);
     let terrain = Terrain(canvas, mapSize, grassTile, fireTile, burntTile);
     terrain.initializeTerrain();
     let miniMap = MiniMap(context, mapSize);
 
     let loop = GameLoop({  // create the main game loop
         update: (dt) => { // update the game state
-            updateOrigin(lion.absPosition(), 2500, 2500, origin);
+            updateOrigin(lion.absPosition(), mapSize * tileSizePx, mapSize * tileSizePx, origin);
             lion.update(origin);
             terrain.updateTerrain();
+            if (didLionBlow) {
+                console.log("Here");
+                let map = terrain.getMap();
+                terrain.handleLionBlow(lion.blow(map));
+                didLionBlow = false;
+            }
         },
         render: () => { // render the game state
             terrain.renderTerrain(origin);
             lion.render();
-            miniMap.render(lion.absPosition(), terrain.getMap());
+            miniMap.render(lion.tilePosition(), terrain.getMap());
         }
     });
 
