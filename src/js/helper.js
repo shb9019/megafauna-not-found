@@ -20,11 +20,12 @@ export const renderTiles = (tileImage, context, minEdgeSize) => {
 	context.fill();
 }
 
-export const updateOrigin = (x, y, width, height, origin) => {
-	let px1 = (x - (window.innerWidth / 2));
-	let py1 = (y - (window.innerHeight / 2));
-	let px2 = (x + (window.innerWidth / 2));
-	let py2 = (y + (window.innerHeight / 2));
+export const updateOrigin = (pos, width, height, origin) => {
+	let px1 = (pos.x - (window.innerWidth / 2));
+	let py1 = (pos.y - (window.innerHeight / 2));
+	let px2 = (pos.x + (window.innerWidth / 2));
+	let py2 = (pos.y + (window.innerHeight / 2));
+
 	if (px1 <= 0) {
 		origin.x = 0;
 	} else if (px2 >= width) {
@@ -40,5 +41,4 @@ export const updateOrigin = (x, y, width, height, origin) => {
 	} else {
 		origin.y = -py1;
 	}
-	console.log(JSON.stringify(width + " " + height + " " + px1 + " " +  py1 + " " +  px2 + " " +  py2 + " {" +  origin.x + ", " + origin.y + "}"));
 }
