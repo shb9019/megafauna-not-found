@@ -42,3 +42,53 @@ export const updateOrigin = (pos, width, height, origin) => {
 		origin.y = -py1;
 	}
 }
+
+let spareRandom = null;
+
+const normalRandom = () => {
+	let val, u, v, s, mul;
+
+	if(spareRandom !== null) {
+		val = spareRandom;
+		spareRandom = null;
+	} else {
+		do {
+			u = Math.random()*2 - 1;
+			v = Math.random()*2 - 1;
+
+			s = u*u + v*v;
+		} while(s === 0 || s >= 1);
+
+		mul = Math.sqrt(-2 * Math.log(s) / s);
+
+		val = u * mul;
+		spareRandom = v * mul;
+	}
+	
+	return val;
+};
+
+const normalRandomInRange = (min, max) => {
+	let val;
+	do {
+		val = normalRandom();
+	} while(val < min || val > max);
+	
+	return val;
+}
+
+const normalRandomScaled = (mean, stddev) => {
+	let r = normalRandom();
+
+	r = r * stddev + mean;
+
+	return r;
+};
+
+export const getRandomIndex = (totalSize) => {
+	let randomIndex;
+	do {
+		randomIndex = normalRandomScaled(0, 0.1) * totalSize;
+	} while (randomIndex < 0 || randomIndex >= totalSize);
+	return randomIndex;
+};
