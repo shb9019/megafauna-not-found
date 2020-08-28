@@ -2,6 +2,7 @@ let { init, Sprite, SpriteSheet, GameLoop, TileEngine } = kontra;
 import { calculateAngle, updateOrigin } from './helper';
 import { Terrain } from './objects/terrain';
 import { Lion } from './objects/lion';
+import { Humans } from './objects/human';
 import { MiniMap } from './objects/minimap';
 
 let { canvas, context } = init();
@@ -40,6 +41,8 @@ grassTile.onload = () => {
     let terrain = Terrain(canvas, mapSize, grassTile, fireTile, burntTile);
     terrain.initializeTerrain();
     let miniMap = MiniMap(context, mapSize);
+    let humans = Humans(mapSize);
+    humans.generateProbabilityMap(terrain.getMap(), lion.tilePosition());
 
     let loop = GameLoop({  // create the main game loop
         update: (dt) => { // update the game state

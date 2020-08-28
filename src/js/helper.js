@@ -43,6 +43,16 @@ export const updateOrigin = (pos, width, height, origin) => {
 	}
 }
 
+export const create2DArray = (mapSize, initialValue = null) => {
+	let arr = [];
+	for (let i = 0; i < mapSize; i++) {
+		let row = [];
+		for (let j = 0; j < mapSize; j++) row.push(initialValue);
+		arr.push(row);
+	}
+	return arr;
+}
+
 let spareRandom = null;
 
 const normalRandom = () => {
