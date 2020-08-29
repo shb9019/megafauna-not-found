@@ -9,7 +9,7 @@ export const Humans = (context, mapSize, numHumans) => {
 	// Each tile's probability = (w1*((distance from lion)/(max distance from lion)) + w2*((area of grass that can be burned)/(total area)))/(w1 + w2)
 
 	let humansInterface = {};
-	const w1 = 0.8, w2 = 0.2;
+	const w1 = 0.5, w2 = 0.5;
 	const directions = [[1, 0], [0, 1], [-1, 0], [0, -1]];
 	let humanSprites = [];
 	let allTilesViabilities = [];
@@ -30,10 +30,20 @@ export const Humans = (context, mapSize, numHumans) => {
 				y: position.y * 25 + 5,
 				targetX: position.x * 25 + 5,
 				targetY: position.y * 25 + 5,
-				currentScore: position.probability
+				currentScore: position.probability,
+				dead: false
 			});
 			lastBurnTime.push(Date.now());
 			burnWaitTime.push(randomIntFromInterval(5000, 8000));
+		}
+	};
+
+	humansInterface.handleLionSlay = (lionPos, radius) => {
+		for (let i = 0; i < numHumans; i++) {
+			if (Math.sqrt((lionPos.x - humanSprites[i].x)*(lionPos.x - humanSprites[i].x) + (lionPos.y - humanSprites[i].y)*(lionPos.y - humanSprites[i].y)) <= radius) {
+				humanSprites[i].dead = true;
+				console.log(i, "dead");
+			}
 		}
 	};
 
@@ -113,6 +123,7 @@ export const Humans = (context, mapSize, numHumans) => {
 
 	humansInterface.renderHumans = (origin) => {
 		for (let i = 0; i < numHumans; i++) {
+			if (humanSprites[i].dead) continue;
 			context.fillStyle = 'black';
 			context.fillRect(humanSprites[i].x + origin.x, humanSprites[i].y + origin.y, 15, 15);
 		}
@@ -125,6 +136,7 @@ export const Humans = (context, mapSize, numHumans) => {
 		lastGeneration = Date.now();
 		generateViabilityMap(map, lionPos);
 		for (let i = 0; i < numHumans; i++) {
+			if (humanSprites[i].dead) continue;
 			let position = allTilesViabilities[getRandomIndex(mapSize * mapSize)];
 			let p1 = position.probability;
 			let px = allProbabilities[100 * Math.floor(humanSprites[i].targetX / 25) + Math.floor(humanSprites[i].targetY / 25)];
@@ -142,6 +154,7 @@ export const Humans = (context, mapSize, numHumans) => {
 	humansInterface.updatePositions = () => {
 		let burnPositions = [];
 		for (let i = 0; i < numHumans; i++) {
+			if (humanSprites[i].dead) continue;
 			const human = humanSprites[i];
 			if ((human.targetX == human.x) && (human.targetY == human.y)) continue;
 			if (human.targetX == human.x) {

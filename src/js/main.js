@@ -4,6 +4,7 @@ import { Terrain } from './objects/terrain';
 import { Lion } from './objects/lion';
 import { Humans } from './objects/human';
 import { MiniMap } from './objects/minimap';
+import { Shadow } from './objects/shadow';
 
 let { canvas, context } = init();
 canvas.width = window.innerWidth;
@@ -31,18 +32,25 @@ grassTile.onload = () => {
         x: 0,
         y: 0
     };
+    let lastLoop = new Date();
     let didLionBlow = false;
+    let didLionSlay = false;
 
     let setLionBlow = () => {
         didLionBlow = true;
     };
 
-    let lion = Lion(mapSize, tileSizePx, idleSprite, walkSprite, setLionBlow);
+    let setLionSlay = () => {
+        didLionSlay = true;
+    };
+
+    let lion = Lion(mapSize, tileSizePx, idleSprite, walkSprite, setLionBlow, setLionSlay);
     let terrain = Terrain(canvas, mapSize, grassTile, fireTile, burntTile);
     terrain.initializeTerrain();
-    let miniMap = MiniMap(context, mapSize);
+    let miniMap = MiniMap(mapSize);
     let humans = Humans(context, mapSize, 1);
     humans.initializeHumans(terrain.getMap(), lion.tilePosition());
+    let shadow = Shadow();
 
     let loop = GameLoop({  // create the main game loop
         update: (dt) => { // update the game state
@@ -57,6 +65,11 @@ grassTile.onload = () => {
                 didLionBlow = false;
             }
 
+            if (didLionSlay) {
+                humans.handleLionSlay(lion.absPosition, 200);
+                didLionSlay = false;
+            }
+
             humans.updateHumanTargets(map, lion.tilePosition());
             let burnPositions = humans.updatePositions();
             terrain.handleHumanBurn(burnPositions);
@@ -65,6 +78,7 @@ grassTile.onload = () => {
             terrain.renderTerrain(origin);
             lion.render();
             humans.renderHumans(origin);
+            shadow.addShadow(lion.absPosition(), terrain.getFireTiles(), 200, 82.5, origin);
             miniMap.render(lion.tilePosition(), terrain.getMap());
         }
     });

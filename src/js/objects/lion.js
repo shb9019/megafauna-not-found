@@ -1,6 +1,6 @@
 let { Sprite, SpriteSheet } = kontra;
 
-export const Lion = (numTiles, tileSizePx, idleSprite, walkSprite, setLionBlow) => {
+export const Lion = (numTiles, tileSizePx, idleSprite, walkSprite, setLionBlow, setLionSlay) => {
 	const lionInterface = {};
 	const mapSizePx = numTiles * tileSizePx;
 
@@ -60,6 +60,7 @@ export const Lion = (numTiles, tileSizePx, idleSprite, walkSprite, setLionBlow) 
 	    map[e.key] = true;
 
 	    if (e.key == " ") {
+	    	setLionSlay();
 	    	if ((Date.now() - lastBlowTime) >= blowTimeout) {
 	    		setLionBlow();
 	    		lastBlowTime = Date.now();

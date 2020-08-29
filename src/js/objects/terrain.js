@@ -68,6 +68,20 @@ export const Terrain = (canvas, mapSize, grassTile, fireTile, burntTile) => {
 		map = JSON.parse(JSON.stringify(updatedMap));
 	}
 
+	terrainObject.getFireTiles = () => {
+		let fireTiles = [];
+		for (let i = 0; i < mapSize; i++) {
+			for (let j = 0; j < mapSize; j++) {
+				if (map[i][j] == 1)
+					fireTiles.push({
+						x: (i * 25.0) + 12.5,
+						y: (j * 25.0) + 12.5
+					});
+			}
+		}
+		return fireTiles;
+	};
+
 	terrainObject.handleLionBlow = (updatedMap) => {
 		map = JSON.parse(JSON.stringify(updatedMap));
 	}
