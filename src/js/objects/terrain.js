@@ -19,7 +19,6 @@ export const Terrain = (canvas, mapSize, grassTile, fireTile, burntTile) => {
 			}
 			map.push(row);
 		}
-		map[mapSize/2][mapSize/2] = 1;
 	}
 
 	terrainObject.renderTerrain = (origin) => {
@@ -72,6 +71,12 @@ export const Terrain = (canvas, mapSize, grassTile, fireTile, burntTile) => {
 	terrainObject.handleLionBlow = (updatedMap) => {
 		map = JSON.parse(JSON.stringify(updatedMap));
 	}
+
+	terrainObject.handleHumanBurn = (burnPositions) => {
+		burnPositions.forEach((burnPosition) => {
+			map[burnPosition.x][burnPosition.y] = 1;
+		});
+	};
 
 	return terrainObject;
 }

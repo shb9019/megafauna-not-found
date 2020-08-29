@@ -41,8 +41,8 @@ grassTile.onload = () => {
     let terrain = Terrain(canvas, mapSize, grassTile, fireTile, burntTile);
     terrain.initializeTerrain();
     let miniMap = MiniMap(context, mapSize);
-    let humans = Humans(mapSize);
-    humans.generateProbabilityMap(terrain.getMap(), lion.tilePosition());
+    let humans = Humans(context, mapSize, 1);
+    humans.initializeHumans(terrain.getMap(), lion.tilePosition());
 
     let loop = GameLoop({  // create the main game loop
         update: (dt) => { // update the game state
@@ -56,10 +56,15 @@ grassTile.onload = () => {
                 terrain.handleLionBlow(lion.blow(map));
                 didLionBlow = false;
             }
+
+            humans.updateHumanTargets(map, lion.tilePosition());
+            let burnPositions = humans.updatePositions();
+            terrain.handleHumanBurn(burnPositions);
         },
         render: () => { // render the game state
             terrain.renderTerrain(origin);
             lion.render();
+            humans.renderHumans(origin);
             miniMap.render(lion.tilePosition(), terrain.getMap());
         }
     });

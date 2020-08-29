@@ -100,5 +100,9 @@ export const getRandomIndex = (totalSize) => {
 	do {
 		randomIndex = normalRandomScaled(0, 0.1) * totalSize;
 	} while (randomIndex < 0 || randomIndex >= totalSize);
-	return randomIndex;
+	return Math.floor(randomIndex);
 };
+
+export const randomIntFromInterval = (min, max) => { // min and max included 
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
