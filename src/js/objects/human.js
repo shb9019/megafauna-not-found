@@ -9,7 +9,7 @@ export const Humans = (context, mapSize, numHumans) => {
 	// Each tile's probability = (w1*((distance from lion)/(max distance from lion)) + w2*((area of grass that can be burned)/(total area)))/(w1 + w2)
 
 	let humansInterface = {};
-	const w1 = 0.5, w2 = 0.5;
+	const w1 = 0.7, w2 = 0.2;
 	const directions = [[1, 0], [0, 1], [-1, 0], [0, -1]];
 	let humanSprites = [];
 	let allTilesViabilities = [];
@@ -18,7 +18,7 @@ export const Humans = (context, mapSize, numHumans) => {
 	let lastBurnTime = [];
 	let lastGeneration = 0;
 	let generationGap = 1000;
-	let speed = 4;
+	let speed = 6;
 
 	humansInterface.initializeHumans = (map, lionPos) => {
 		generateViabilityMap(map, lionPos);
@@ -42,7 +42,6 @@ export const Humans = (context, mapSize, numHumans) => {
 		for (let i = 0; i < numHumans; i++) {
 			if (Math.sqrt((lionPos.x - humanSprites[i].x)*(lionPos.x - humanSprites[i].x) + (lionPos.y - humanSprites[i].y)*(lionPos.y - humanSprites[i].y)) <= radius) {
 				humanSprites[i].dead = true;
-				console.log(i, "dead");
 			}
 		}
 	};
@@ -187,6 +186,14 @@ export const Humans = (context, mapSize, numHumans) => {
 			}
 		}
 		return burnPositions;
+	};
+
+	humansInterface.getNumAliveHumans = () => {
+		let numHumansAlive = 0;
+		for (let i = 0; i < humanSprites.length; i++) {
+			if (!humanSprites[i].dead) numHumansAlive++;
+		}
+		return numHumansAlive;
 	};
 
 	return humansInterface;

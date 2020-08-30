@@ -71,7 +71,7 @@ export const Lion = (numTiles, tileSizePx, idleSprite, walkSprite, setLionBlow, 
     let updatePosition = () => {
     	if (map["d"] || map["ArrowRight"]) {
     		absolutePosition.x += speed;
-    		absolutePosition.x = Math.min(mapSizePx, absolutePosition.x);
+    		absolutePosition.x = Math.min(mapSizePx - 1, absolutePosition.x);
     	} else if (map["a"] || map["ArrowLeft"]) {
     		absolutePosition.x -= speed;
     		absolutePosition.x = Math.max(0, absolutePosition.x);
@@ -81,7 +81,7 @@ export const Lion = (numTiles, tileSizePx, idleSprite, walkSprite, setLionBlow, 
     		absolutePosition.y = Math.max(0, absolutePosition.y);
     	} else if (map["s"] || map["ArrowDown"]) {
 	    	absolutePosition.y += speed;
-    		absolutePosition.y = Math.min(mapSizePx, absolutePosition.y);
+    		absolutePosition.y = Math.min(mapSizePx - 1, absolutePosition.y);
     	}
     };
 
@@ -150,9 +150,17 @@ export const Lion = (numTiles, tileSizePx, idleSprite, walkSprite, setLionBlow, 
     lionInterface.fireDamage = (map) => {
     	let position = tilePosition();
     	if (map[position.x][position.y] == 1) {
-    		health -= fireDamage;
+    		health = Math.max(0, health - fireDamage);
     	}
     }
+
+    lionInterface.getHealth = () => {
+    	return (health / 100);
+    }
+
+    lionInterface.getBlowStamina = () => {
+    	return Math.min(1, ((Date.now() - lastBlowTime) / blowTimeout));
+    };
 
     return lionInterface;
 }

@@ -16,7 +16,7 @@ export const MiniMap = (numTiles) => {
 	let drawLionBlip = (lionPosition) => {
 		let x = startX + (lionPosition.x * 2);
 		let y = startY + (lionPosition.y * 2);
-		context.fillStyle = "#FFFF00";
+		context.fillStyle = "red";
 		context.fillRect(x - 1, y - 1, 4, 4); 
 	}
 
@@ -38,6 +38,7 @@ export const MiniMap = (numTiles) => {
 	}
 
 	let drawGreenCover = (map) => {
+		context.fillStyle = "yellow";
 		let numGreenTiles = 0;
 		for (let i = 0; i < numTiles; i++) {
 			for (let j = 0; j < numTiles; j++) {
@@ -49,12 +50,60 @@ export const MiniMap = (numTiles) => {
 		context.fillText("Green Cover left: " + greenCoverPercentage + "%", startX, startY + (2 * numTiles) + 20);
 	};
 
-	miniMapInterface.render = (lionPosition, map) => {
+	let drawAliveHumans = (numHumansAlive) => {
+		context.fillStyle = "yellow";
+		context.font = "15px arial";
+		context.fillText("Humans alive: " + numHumansAlive, startX, startY + (2 * numTiles) + 40);
+	};
+
+	let drawHealthBar = (health) => {
+		// Draw the cross sign
+		context.fillStyle = 'white';
+		context.fillRect(10, canvas.height - 25, 20, 10);
+		context.fillRect(15, canvas.height - 30, 10, 20);
+
+		// Draw the health bar
+		context.fillRect(40, canvas.height - 30, 204, 20);
+		context.fillStyle = 'red';
+		context.fillRect(42, canvas.height - 28, 200 * health, 16);
+		context.fillStyle = 'black';
+		context.fillRect(42 + (200 * health), canvas.height - 28, 200 * (1 - health), 16);
+	};
+
+	let drawStaminaBar = (stamina) => {
+			let startX = canvas.width - 30;
+			let startY = canvas.height - 30;
+
+		    // Draw the energy icon
+		    context.fillStyle = '#ffc40c';
+		    context.beginPath();
+    		context.moveTo(startX + 10, startY + 0);
+    		context.lineTo(startX + 0, startY + 10);
+    		context.lineTo(startX + 10, startY + 10);
+    		context.fill();
+    		context.beginPath();
+    		context.moveTo(startX + 6, startY + 10);
+    		context.lineTo(startX + 16, startY + 10);
+    		context.lineTo(startX + 6, startY + 20);
+    		context.fill();
+
+    		context.fillStyle = 'white';
+    		context.fillRect(startX - 214, startY, 204, 20);
+    		context.fillStyle = '#ffc40c';
+    		context.fillRect(startX - 212, startY + 2, 200 *  stamina, 16);
+    		context.fillStyle = 'black';
+    		context.fillRect(startX - 212 + (200 * stamina), startY + 2, 200 *  (1 - stamina), 16);
+	};
+
+	miniMapInterface.render = (lionPosition, map, numHumansAlive, health, stamina) => {
 		context.globalCompositeOperation = 'source-over';
 		drawBoundingBox();
 		drawFireBlips(map);
 		drawLionBlip(lionPosition);
 		drawGreenCover(map);
+		drawAliveHumans(numHumansAlive);
+		drawHealthBar(health);
+		drawStaminaBar(stamina);
 	}
 
 	return miniMapInterface; 

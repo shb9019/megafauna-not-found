@@ -5,6 +5,7 @@ import { Lion } from './objects/lion';
 import { Humans } from './objects/human';
 import { MiniMap } from './objects/minimap';
 import { Shadow } from './objects/shadow';
+import { Title } from './objects/title';
 
 let { canvas, context } = init();
 canvas.width = window.innerWidth;
@@ -48,9 +49,10 @@ grassTile.onload = () => {
     let terrain = Terrain(canvas, mapSize, grassTile, fireTile, burntTile);
     terrain.initializeTerrain();
     let miniMap = MiniMap(mapSize);
-    let humans = Humans(context, mapSize, 1);
+    let humans = Humans(context, mapSize, 5);
     humans.initializeHumans(terrain.getMap(), lion.tilePosition());
     let shadow = Shadow();
+    let title = Title();
 
     let loop = GameLoop({  // create the main game loop
         update: (dt) => { // update the game state
@@ -66,7 +68,7 @@ grassTile.onload = () => {
             }
 
             if (didLionSlay) {
-                humans.handleLionSlay(lion.absPosition, 200);
+                humans.handleLionSlay(lion.absPosition(), 200);
                 didLionSlay = false;
             }
 
@@ -79,7 +81,8 @@ grassTile.onload = () => {
             lion.render();
             humans.renderHumans(origin);
             shadow.addShadow(lion.absPosition(), terrain.getFireTiles(), 200, 82.5, origin);
-            miniMap.render(lion.tilePosition(), terrain.getMap());
+            miniMap.render(lion.tilePosition(), terrain.getMap(), humans.getNumAliveHumans(), lion.getHealth(), lion.getBlowStamina());
+            title.render();
         }
     });
 
