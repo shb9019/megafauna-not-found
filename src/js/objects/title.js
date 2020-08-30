@@ -13,12 +13,12 @@ export const Title = () => {
 
 	const fireSpriteSheet = SpriteSheet({
         image: fireSprite,
-        frameWidth: 32,
-        frameHeight: 32,
+        frameWidth: 20,
+        frameHeight: 20,
         animations: {
             burn: {
-                frames: '0..4',
-                frameRate: 10
+                frames: '0..5',
+                frameRate: 15
             }
         }
     });
@@ -38,7 +38,7 @@ export const Title = () => {
 
 	let renderTitle = () => {
 		const gameLine1 = "MEGA FAUNA";
-		let gameLine1FontSize = 32;
+		let gameLine1FontSize = 20;
 		let startX1 = (canvas.width - getTextLength(gameLine1, gameLine1FontSize)) / 2.0;
 		let blocks = getPositions(canvas, context, gameLine1, gameLine1FontSize, startX1, 0);
 		for (let i = 0; i < blocks.length; i++) {
