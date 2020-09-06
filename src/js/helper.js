@@ -1,5 +1,5 @@
 export const calculateAngle = (dx, dy) => {
-    if (dy == 0) {
+    if (dy === 0) {
     	if (dx > 0) return 0;
     	else if (dx < 0) return Math.PI;
     } else if (dy > 0) {
@@ -11,6 +11,25 @@ export const calculateAngle = (dx, dy) => {
     	else if (dx < 0) return (-3 * Math.PI) / 4.0;
     	else return -Math.PI / 2.0;
     }
+}
+
+export const copy = (a) => {
+	return JSON.parse(JSON.stringify(a));
+}
+
+export const getTimeSince = (time) => {
+	return (Date.now() - time);
+};
+
+export const distance = (pointA, pointB) => {
+	return Math.sqrt((pointA.x - pointB.x)*(pointA.x - pointB.x) + (pointA.y - pointB.y)*(pointA.y - pointB.y));
+};
+
+export const getMidPointPx = (tileIndex, tileSizePx) => {
+	return {
+		x: (tileIndex.x + 0.5) * tileSizePx,
+		y: (tileIndex.y + 0.5) * tileSizePx
+	};
 }
 
 export const renderTiles = (tileImage, context, minEdgeSize) => {

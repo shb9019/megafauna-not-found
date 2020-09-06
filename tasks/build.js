@@ -11,7 +11,7 @@ const livereload  = require('gulp-livereload');
 const util        = require('gulp-util');
 
 function onError( err, pipeline ) {
-  util.log( util.colors.red( `Error: ${ err.message }` ) );
+  util.log( util.colors.red( `Error: ${ err }` ) );
   util.beep();
   pipeline.emit('end');
 }

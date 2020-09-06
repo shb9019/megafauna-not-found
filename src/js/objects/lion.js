@@ -1,166 +1,194 @@
 let { Sprite, SpriteSheet } = kontra;
+import {mapSize, tileSizePx, lionParameters, keys} from '../constants';
+import {copy, getTimeSince, distance, getMidPointPx} from '../helper';
 
-export const Lion = (numTiles, tileSizePx, idleSprite, walkSprite, setLionBlow, setLionSlay) => {
+const idleSprite = new Image();
+idleSprite.src = 'public/assets/idle.png';
+
+const walkSprite = new Image();
+walkSprite.src = 'public/assets/walk.png';
+
+// Object to handle the user Lion
+export const Lion = (setLionBlow, setLionSlay) => {
+	// Initializing all constants used.
 	const lionInterface = {};
-	const mapSizePx = numTiles * tileSizePx;
 
-    const idleSpriteSheet = SpriteSheet({
-        image: idleSprite,
-        frameWidth: 64,
-        frameHeight: 64,
-        animations: {
-            idle: {
-                frames: '0..4',
-                frameRate: 5
-            }
-        }
-    });
+	const mapSizePx = mapSize * tileSizePx;
+	const {
+		speed,
+		fireDamage,
+		extinguishRange,
+		extinguishRechargeTime
+	} = lionParameters;
 
-    const walkSpriteSheet = SpriteSheet({
-        image: walkSprite,
-        frameWidth: 64,
-        frameHeight: 64,
-        animations: {
-            idle: {
-                frames: '0..1',
-                frameRate: 2
-            }
-        }
-    });
+	const idleSpriteSheet = SpriteSheet({
+		image: idleSprite,
+		frameWidth: 64,
+		frameHeight: 64,
+		animations: {
+			idle: {
+				frames: '0..4',
+				frameRate: 5
+			}
+		}
+	});
 
-    const absolutePosition = {
-    	x: 32,
-    	y: 32
-    };
-    
-    const speed = 5.0;
-    const blowRange = 10;
-    const blowTimeout = 5000;
-    let lastBlowTime = 0;
+	const walkSpriteSheet = SpriteSheet({
+		image: walkSprite,
+		frameWidth: 64,
+		frameHeight: 64,
+		animations: {
+			idle: {
+				frames: '0..1',
+				frameRate: 2
+			}
+		}
+	});
 
-    let health = 100;
-    const fireDamage = 2;
+	// Initializing all variables.
+	const state = {
+		position: copy(lionParameters.initialPosition),
+		health: lionParameters.initialHealth,
+		lastExtinguishTime: 0,
+		pressedKeys: {}
+	};
 
-    const sprite = Sprite({
-        x: absolutePosition.x,
-        y: absolutePosition.y,
-        anchor: {x: 0.5, y: 0.5},
-        animations: idleSpriteSheet.animations
-    });
+	// Helper function
+	const tilePosition = () => {
+		return {
+			x: Math.floor(state.position.x / tileSizePx),
+			y: Math.floor(state.position.y / tileSizePx)
+		};
+	}
 
+	const sprite = Sprite({
+		x: state.position.x,
+		y: state.position.y,
+		anchor: {x: 0.5, y: 0.5},
+		animations: idleSpriteSheet.animations
+	});
 
-    // FIXME: In some cases, the key gets stuck i.e., keeps moving in a direciton.
-	let map = {}; // You could also use an array
+	// All key press logic
+	const pressKey = (key) => {
+		state.pressedKeys[key] = true;
+	};
+
+	const releaseKey = (key) => {
+		state.pressedKeys[key] = false;
+	};
+
+	const isKeyPressed = (key) => {
+		return state.pressedKeys[key];
+	};
 
 	window.onkeyup = (e) => {
-		map[e.key] = false;
+		releaseKey(keys[e.key]);
 	}
-    
-    window.onkeydown = (e) => {
-	    map[e.key] = true;
+	
+	window.onkeydown = (e) => {
+		pressKey(keys[e.key]);
 
-	    if (e.key == " ") {
-	    	setLionSlay();
-	    	if ((Date.now() - lastBlowTime) >= blowTimeout) {
-	    		setLionBlow();
-	    		lastBlowTime = Date.now();
-	    	}
-	    }
-    };
+		if (e.key == " ") {
+			setLionSlay();
+			if (getTimeSince(state.lastExtinguishTime) >= extinguishRechargeTime) {
+				setLionBlow();
+				state.lastExtinguishTime = Date.now();
+			}
+		}
+	};
 
-    let updatePosition = () => {
-    	if (map["d"] || map["ArrowRight"]) {
-    		absolutePosition.x += speed;
-    		absolutePosition.x = Math.min(mapSizePx - 1, absolutePosition.x);
-    	} else if (map["a"] || map["ArrowLeft"]) {
-    		absolutePosition.x -= speed;
-    		absolutePosition.x = Math.max(0, absolutePosition.x);
-    	}
-    	if (map["w"] || map["ArrowUp"]) {
-    		absolutePosition.y -= speed;
-    		absolutePosition.y = Math.max(0, absolutePosition.y);
-    	} else if (map["s"] || map["ArrowDown"]) {
-	    	absolutePosition.y += speed;
-    		absolutePosition.y = Math.min(mapSizePx - 1, absolutePosition.y);
-    	}
-    };
+	// Updates position based on keys currently pressed.
+	const updatePosition = () => {
+		if (isKeyPressed("right")) {
+			state.position.x += speed;
+			state.position.x = Math.min(mapSizePx - 1, state.position.x);
+		} else if (isKeyPressed("left")) {
+			state.position.x -= speed;
+			state.position.x = Math.max(0, state.position.x);
+		}
+		if (isKeyPressed("up")) {
+			state.position.y -= speed;
+			state.position.y = Math.max(0, state.position.y);
+		} else if (isKeyPressed("down")) {
+			state.position.y += speed;
+			state.position.y = Math.min(mapSizePx - 1, state.position.y);
+		}
+	};
 
-    let updateRotation = () => {
-    	if (map["d"] && map["s"]) {
-    		sprite.rotation = Math.PI / 4;
-    	} else if (map["d"] && map["w"]) {
-    		sprite.rotation = -Math.PI / 4;
-    	} else if (map["w"] && map["a"]) {
-    		sprite.rotation = (-3 * Math.PI) / 4;
-    	} else if (map["a"] && map["a"]) {
-    		sprite.rotation = (3 * Math.PI) / 4;
-    	} else if (map["d"]) {
-    		sprite.rotation = 0;
-    	} else if (map["w"]) {
-    		sprite.rotation = -Math.PI / 2;
-    	} else if (map["a"]) {
-    		sprite.rotation = -Math.PI;
-    	} else if (map["s"]) {
-    		sprite.rotation = Math.PI / 2;
-    	}
-    };
+	// Updates sprite rotation based on keys currently pressed.
+	const updateRotation = () => {
+		if (isKeyPressed("right") && isKeyPressed("down")) {
+			sprite.rotation = Math.PI / 4;
+		} else if (isKeyPressed("right") && isKeyPressed("up")) {
+			sprite.rotation = -Math.PI / 4;
+		} else if (isKeyPressed("up") && isKeyPressed("left")) {
+			sprite.rotation = (-3 * Math.PI) / 4;
+		} else if (isKeyPressed("left") && isKeyPressed("down")) {
+			sprite.rotation = (3 * Math.PI) / 4;
+		} else if (isKeyPressed("right")) {
+			sprite.rotation = 0;
+		} else if (isKeyPressed("up")) {
+			sprite.rotation = -Math.PI / 2;
+		} else if (isKeyPressed("left")) {
+			sprite.rotation = -Math.PI;
+		} else if (isKeyPressed("down")) {
+			sprite.rotation = Math.PI / 2;
+		}
+	};
 
-    let tilePosition = () => {
-    	return {
-    		x: Math.floor(absolutePosition.x / tileSizePx),
-    		y: Math.floor(absolutePosition.y / tileSizePx)
-    	};
-    }
+	// Functions exposed to main
+	lionInterface.update = (origin) => {
+		updatePosition();
+		updateRotation();
+		sprite.x = origin.x + state.position.x;
+		sprite.y = origin.y + state.position.y;
+		sprite.update();
+	};
 
-    lionInterface.update = (origin) => {
-    	updatePosition();
-    	updateRotation();
-    	sprite.x = origin.x + absolutePosition.x;
-    	sprite.y = origin.y + absolutePosition.y;
-    	sprite.update();
-    };
+	lionInterface.render = () => {
+		sprite.render();
+	}
 
-    lionInterface.render = () => {
-    	sprite.render();
-    }
+	lionInterface.absPosition = () => {
+		return state.position;
+	}
 
-    lionInterface.absPosition = () => {
-    	return absolutePosition;
-    }
+	lionInterface.tilePosition = () => {
+		return tilePosition();
+	}
 
-    lionInterface.tilePosition = () => {
-    	return tilePosition();
-    }
+	lionInterface.blow = (map) => {
+		const returnMap = copy(map);
+		let position = tilePosition();
 
-    lionInterface.blow = (map) => {
-    	const returnMap = JSON.parse(JSON.stringify(map));
-    	let position = tilePosition();
+		let range = (extinguishRange / 2);
 
-    	for (let i = Math.max(0, position.x - blowRange); i <= Math.min(numTiles - 1, position.x + blowRange); i++) {
-    		for (let j = Math.max(0, position.y - blowRange); j <= Math.min(numTiles - 1, position.y + blowRange); j++) {
-    			if (returnMap[i][j] == 1) {
-    				returnMap[i][j] = 2;
-    			}
-    		}
-    	}
+		for (let i = Math.max(0, position.x - range); i <= Math.min(mapSize - 1, position.x + range); i++) {
+			for (let j = Math.max(0, position.y - range); j <= Math.min(mapSize - 1, position.y + range); j++) {
+				let distanceFromLion = distance(getMidPointPx({x: i, y: j}, tileSizePx), state.position);
+				if ((distanceFromLion <= (range * tileSizePx)) && (returnMap[i][j] == 1)) {
+					returnMap[i][j] = 2;
+				}
+			}
+		}
 
-    	return returnMap;
-    }
+		return returnMap;
+	}
 
-    lionInterface.fireDamage = (map) => {
-    	let position = tilePosition();
-    	if (map[position.x][position.y] == 1) {
-    		health = Math.max(0, health - fireDamage);
-    	}
-    }
+	lionInterface.fireDamage = (map) => {
+		let position = tilePosition();
+		if (map[position.x][position.y] == 1) {
+			state.health = Math.max(0, state.health - fireDamage);
+		}
+	}
 
-    lionInterface.getHealth = () => {
-    	return (health / 100);
-    }
+	lionInterface.getHealth = () => {
+		return (state.health / 100);
+	}
 
-    lionInterface.getBlowStamina = () => {
-    	return Math.min(1, ((Date.now() - lastBlowTime) / blowTimeout));
-    };
+	lionInterface.getBlowStamina = () => {
+		return Math.min(1, (getTimeSince(state.lastExtinguishTime) / extinguishRechargeTime));
+	};
 
-    return lionInterface;
+	return lionInterface;
 }

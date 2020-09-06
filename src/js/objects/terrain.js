@@ -1,96 +1,113 @@
-export const Terrain = (canvas, mapSize, grassTile, fireTile, burntTile) => {
-	const terrainObject = {};
-	let map = [];
+import {mapSize, tileSizePx, directions, terrainParameters} from '../constants';
+import {getTimeSince, getMidPointPx, copy} from '../helper';
+
+let grassTile = new Image();
+grassTile.src = 'public/assets/grass.png';
+
+let fireTile = new Image();
+fireTile.src = 'public/assets/fire.png';
+
+let burntTile = new Image();
+burntTile.src = 'public/assets/burnt.png';
+
+export const Terrain = (canvas) => {
 	const context = canvas.getContext("2d");
-	const pixelsPerTile = 25;
-	let currentTime = Date.now();
-	// in milliseconds
-	const fireSpreadRate = 2000;
+	const {fireSpreadRate} = terrainParameters;
 
-	terrainObject.getMap = () => {
-		return map;
-	};
-
-	terrainObject.initializeTerrain = () => {
-		for (let i = 0; i < mapSize; i++) {
+	// Create and initialize map
+	let map = [];
+	(function () {
+ 		for (let i = 0; i < mapSize; i++) {
 			let row = [];
 			for (let j = 0; j < mapSize; j++) {
 				row.push(0);
 			}
 			map.push(row);
 		}
+	})();
+
+	let lastUpdateTime = Date.now();
+
+	// Get tile top-left corner in px 
+	const getTilePositionPx = (x, y) => {
+		return {
+			x: x * tileSizePx,
+			y: y * tileSizePx
+		};
 	}
 
-	terrainObject.renderTerrain = (origin) => {
+	const terrainInterface = {};
+
+	terrainInterface.getMap = () => {
+		return map;
+	};
+
+	terrainInterface.renderTerrain = (origin) => {
 		for (let i = 0; i < mapSize; i++) {
 			for (let j = 0; j < mapSize; j++) {
+				const tilePx = getTilePositionPx(i, j);
+				// Adjusted Position
+				const adjPos = {
+					x: origin.x + tilePx.x,
+					y: origin.y + tilePx.y
+				};
+
 				if (map[i][j] == 0) {
-					context.drawImage(grassTile, origin.x + (i*pixelsPerTile), origin.y + (j*pixelsPerTile), pixelsPerTile, pixelsPerTile);
+					context.drawImage(grassTile, adjPos.x, adjPos.y, tileSizePx, tileSizePx);
 				} else if (map[i][j] == 1) {
-					context.drawImage(fireTile, origin.x + (i*pixelsPerTile), origin.y + (j*pixelsPerTile), pixelsPerTile, pixelsPerTile);
+					context.drawImage(fireTile, adjPos.x, adjPos.y, tileSizePx, tileSizePx);
 				} else if (map[i][j] == 2) {
-					context.drawImage(burntTile, origin.x + (i*pixelsPerTile), origin.y + (j*pixelsPerTile), pixelsPerTile, pixelsPerTile);
+					context.drawImage(burntTile, adjPos.x, adjPos.y, tileSizePx, tileSizePx);
 				}
 			}
 		}
 	};
 
-	terrainObject.updateTerrain = () => {
-		if (((Date.now() - currentTime) < fireSpreadRate)) {
-			return;
-		}
+	terrainInterface.updateTerrain = () => {
+		if (getTimeSince(lastUpdateTime) < fireSpreadRate) return;
 
-		currentTime = Date.now();
-
+		lastUpdateTime = Date.now();
 		let updatedMap = JSON.parse(JSON.stringify(map));
 		for (let i = 0; i < mapSize; i++) {
 			for (let j = 0; j < mapSize; j++) {
 				if (map[i][j] == 1) {
 					updatedMap[i][j] = 2;
-					if (((i-1) >= 0) && (map[i-1][j] == 0)) {
-						updatedMap[i-1][j] = 1;
-					}
-					
-					if (((j-1) >= 0) && (map[i][j-1] == 0)) {
-						updatedMap[i][j-1] = 1;
-					}
-					
-					if (((i+1) < mapSize) && (map[i+1][j] == 0)) {
-						updatedMap[i+1][j] = 1;
-					}
-					
-					if (((j+1) < mapSize) && (map[i][j+1] == 0)) {
-						updatedMap[i][j+1] = 1;
-					}
+					directions.forEach(dir => {
+						const x = i + dir.x;
+						const y = j + dir.y;
+						if ((x >= 0) && (y >= 0) && (x < mapSize) && (y < mapSize) && (map[x][y] == 0)) {
+							updatedMap[x][y] = 1;
+						}
+					});
 				}
 			}
 		}
-		map = JSON.parse(JSON.stringify(updatedMap));
+		map = updatedMap;
 	}
 
-	terrainObject.getFireTiles = () => {
-		let fireTiles = [];
+	// Used by minimap
+	terrainInterface.getFireTiles = () => {
+		const fireTiles = [];
 		for (let i = 0; i < mapSize; i++) {
 			for (let j = 0; j < mapSize; j++) {
-				if (map[i][j] == 1)
-					fireTiles.push({
-						x: (i * 25.0) + 12.5,
-						y: (j * 25.0) + 12.5
-					});
+				if (map[i][j] == 1) {
+					fireTiles.push(getMidPointPx({x: i, y: j}, tileSizePx));
+				}
 			}
 		}
+
 		return fireTiles;
 	};
 
-	terrainObject.handleLionBlow = (updatedMap) => {
-		map = JSON.parse(JSON.stringify(updatedMap));
-	}
+	terrainInterface.handleLionBlow = (updatedMap) => {
+		map = copy(updatedMap);
+	};
 
-	terrainObject.handleHumanBurn = (burnPositions) => {
+	terrainInterface.handleHumanBurn = (burnPositions) => {
 		burnPositions.forEach((burnPosition) => {
 			map[burnPosition.x][burnPosition.y] = 1;
 		});
 	};
 
-	return terrainObject;
+	return terrainInterface;
 }

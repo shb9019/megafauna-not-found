@@ -1,90 +1,83 @@
 let { init, Sprite, SpriteSheet, GameLoop, TileEngine } = kontra;
-import { calculateAngle, updateOrigin } from './helper';
+import { copy, calculateAngle, updateOrigin } from './helper';
 import { Terrain } from './objects/terrain';
 import { Lion } from './objects/lion';
 import { Humans } from './objects/human';
 import { MiniMap } from './objects/minimap';
 import { Shadow } from './objects/shadow';
 import { Title } from './objects/title';
+import { mapSize, tileSizePx, initialCameraPos } from './constants';
 
 let { canvas, context } = init();
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-let idleSprite = new Image();
-idleSprite.src = 'public/assets/idle.png';
+const Main = () => {
+	const origin = copy(initialCameraPos);
 
-let walkSprite = new Image();
-walkSprite.src = 'public/assets/walk.png';
+	const props = {
+		canvas,
+		context
+	};
 
-let grassTile = new Image();
-grassTile.src = 'public/assets/grass.png';
+	const state = {
+		// True, if lion has extinguished and the move has not been processed
+		didLionBlow: false,
+		// True, if lion has slain and the move has not been processed
+		didLionSlay: false
+	};
 
-let fireTile = new Image();
-fireTile.src = 'public/assets/fire.png';
+	const setLionBlow = (value) => {
+		state.didLionBlow = value;
+	};
 
-let burntTile = new Image();
-burntTile.src = 'public/assets/burnt.png';
+	const setLionSlay = (value) => {
+		state.didLionSlay = value;
+	};
 
-grassTile.onload = () => {
-    let mapSize = 100;
-    let tileSizePx = 25;
-    let origin = {
-        x: 0,
-        y: 0
-    };
-    let lastLoop = new Date();
-    let didLionBlow = false;
-    let didLionSlay = false;
+	const lion = Lion(() => setLionBlow(true), () => setLionSlay(true));
 
-    let setLionBlow = () => {
-        didLionBlow = true;
-    };
+	const terrain = Terrain(canvas);
 
-    let setLionSlay = () => {
-        didLionSlay = true;
-    };
+	let miniMap = MiniMap(mapSize);
+	let humans = Humans(context, 5);
+	humans.initializeHumans(terrain.getMap(), lion.tilePosition());
+	let shadow = Shadow();
+	let title = Title();
 
-    let lion = Lion(mapSize, tileSizePx, idleSprite, walkSprite, setLionBlow, setLionSlay);
-    let terrain = Terrain(canvas, mapSize, grassTile, fireTile, burntTile);
-    terrain.initializeTerrain();
-    let miniMap = MiniMap(mapSize);
-    let humans = Humans(context, mapSize, 5);
-    humans.initializeHumans(terrain.getMap(), lion.tilePosition());
-    let shadow = Shadow();
-    let title = Title();
+	let loop = GameLoop({  // create the main game loop
+		update: (dt) => { // update the game state
+			updateOrigin(lion.absPosition(), mapSize * tileSizePx, mapSize * tileSizePx, origin);
+			lion.update(origin);
+			terrain.updateTerrain();
+			
+			let map = terrain.getMap();
+			lion.fireDamage(map);
+			if (state.didLionBlow) {
+				terrain.handleLionBlow(lion.blow(map));
+				setLionBlow(false);
+			}
 
-    let loop = GameLoop({  // create the main game loop
-        update: (dt) => { // update the game state
-            updateOrigin(lion.absPosition(), mapSize * tileSizePx, mapSize * tileSizePx, origin);
-            lion.update(origin);
-            terrain.updateTerrain();
-            
-            let map = terrain.getMap();
-            lion.fireDamage(map);
-            if (didLionBlow) {
-                terrain.handleLionBlow(lion.blow(map));
-                didLionBlow = false;
-            }
+			if (state.didLionSlay) {
+				humans.handleLionSlay(lion.absPosition(), 200);
+				setLionSlay(false);
+			}
 
-            if (didLionSlay) {
-                humans.handleLionSlay(lion.absPosition(), 200);
-                didLionSlay = false;
-            }
+			humans.updateTargets(map, lion.tilePosition());
+			let burnPositions = humans.updatePositions();
+			terrain.handleHumanBurn(burnPositions);
+		},
+		render: () => { // render the game state
+			terrain.renderTerrain(origin);
+			lion.render();
+			humans.renderHumans(origin);
+			shadow.addShadow(lion.absPosition(), terrain.getFireTiles(), 200, 82.5, origin);
+			miniMap.render(lion.tilePosition(), terrain.getMap(), humans.getNumAliveHumans(), lion.getHealth(), lion.getBlowStamina());
+			// title.render();
+		}
+	});
 
-            humans.updateHumanTargets(map, lion.tilePosition());
-            let burnPositions = humans.updatePositions();
-            terrain.handleHumanBurn(burnPositions);
-        },
-        render: () => { // render the game state
-            terrain.renderTerrain(origin);
-            lion.render();
-            humans.renderHumans(origin);
-            shadow.addShadow(lion.absPosition(), terrain.getFireTiles(), 200, 82.5, origin);
-            miniMap.render(lion.tilePosition(), terrain.getMap(), humans.getNumAliveHumans(), lion.getHealth(), lion.getBlowStamina());
-            title.render();
-        }
-    });
-
-    loop.start();    // start the game
+	loop.start();    // start the game
 };
+
+Main();
