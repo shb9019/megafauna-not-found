@@ -73,7 +73,7 @@ const Main = () => {
 			humans.renderHumans(origin);
 			shadow.addShadow(lion.absPosition(), terrain.getFireTiles(), 200, 82.5, origin);
 			miniMap.render(lion.tilePosition(), terrain.getMap(), humans.getNumAliveHumans(), lion.getHealth(), lion.getBlowStamina());
-			// title.render();
+			title.render();
 		}
 	});
 
