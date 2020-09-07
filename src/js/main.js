@@ -66,6 +66,7 @@ const Main = () => {
 			humans.updateTargets(map, lion.tilePosition());
 			let burnPositions = humans.updatePositions();
 			terrain.handleHumanBurn(burnPositions);
+			title.update();
 		},
 		render: () => { // render the game state
 			terrain.renderTerrain(origin);
