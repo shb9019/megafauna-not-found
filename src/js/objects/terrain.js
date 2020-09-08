@@ -109,5 +109,15 @@ export const Terrain = (canvas) => {
 		});
 	};
 
+	terrainInterface.getGreenCoverPercentage = () => {
+		let numGreenTiles = 0;
+		for (let i = 0; i < mapSize; i++) {
+			for (let j = 0; j < mapSize; j++) {
+				if (map[i][j] === 0) numGreenTiles++;
+			}
+		}
+		return ((100.0 * numGreenTiles) / (mapSize * mapSize)).toFixed(2);
+	};
+
 	return terrainInterface;
 }

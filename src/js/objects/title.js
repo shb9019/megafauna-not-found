@@ -7,11 +7,12 @@ import {getTimeSince} from "../helper";
 let fireSprite = new Image();
 fireSprite.src = 'public/assets/fire2.png';
 
-export const Title = (setLevel) => {
+export const Title = (currentLevel, setLevel, changeGameStarted) => {
 	const titleInterface = {};
 	let clickableRectangles = [];
 
 	let pageNumber = 0;
+	let gameOverReason = "";
 	const GAME_START = 99;
 
 	let { canvas, context } = init('title');
@@ -80,6 +81,36 @@ export const Title = (setLevel) => {
 			]
 		);
 	};
+
+    const renderResume = () => {
+        const gameLine = "RESUME LEVEL " + currentLevel;
+        let fontSize = 8;
+        let totalWidth = getTextLength(gameLine, fontSize) + 60;
+        let startX = (canvas.width - totalWidth) / 2.0;
+        const startY = (0.8 * canvas.height);
+        draw(canvas, context, gameLine, fontSize, startX + 60, startY);
+
+        let x = startX;
+        let y = startY;
+        context.fillStyle = "white";
+        context.beginPath();
+        context.moveTo(x, y);
+        x += 40;
+        y += 20;
+        context.lineTo(x, y);
+        x -= 40;
+        y += 20;
+        context.lineTo(x, y);
+        context.fill();
+
+        // Create the button.
+        clickableRectangles.push([
+                {x: startX, y: startY},
+                {x: startX + 60 + getTextLength(gameLine, fontSize), y: startY + 80},
+                () => { pageNumber = GAME_START; changeGameStarted(true); }
+            ]
+        );
+    };
 
 	const renderTitle = () => {
 	    let startY = 0.2 * canvas.height;
@@ -178,24 +209,26 @@ export const Title = (setLevel) => {
 
     const renderControls = () => {
         const text = "CONTROLS";
-        let fontSize = 15;
+        let fontSize = 12;
         const textLength = getTextLength(text, fontSize);
         let x = (canvas.width - textLength) / 2;
         let y = 50;
         draw(canvas, context, text, fontSize, x, y);
 
         const controls = [
-            "W - Move Up",
-            "A - Move Left",
-            "S - Move Down",
-            "D - Move Right",
-            "K - Kill Sapiens in range",
+            "W     - Move Up",
+            "A     - Move Left",
+            "S     - Move Down",
+            "D     - Move Right",
+            "",
+            "K     - Kill Sapiens in range",
             "Space - Extinguish Fire",
+			"R     - Restart Level",
 			"",
 			"Don't walk into Fire!"
         ];
         context.font = '30px Courier New';
-        y = 250;
+        y = 230;
         x = 80;
         for (let i = 0; i < controls.length; i++) {
             context.fillText(controls[i], x, y);
@@ -207,20 +240,20 @@ export const Title = (setLevel) => {
         const text = "START LEVEL 1";
         let fontSize = 5;
         const textLength = getTextLength(text, fontSize);
-        let x = canvas.width - textLength - 50;
+        let x = canvas.width - textLength - 80;
         let y = canvas.height - (10 * fontSize);
         draw(canvas, context, text, fontSize, x, y);
 
         clickableRectangles.push([
                 {x, y},
-                {x: x + textLength + 50, y: y + 30},
-                () => { pageNumber = GAME_START; setLevel(1); }
+                {x: x + textLength + 80, y: y + 30},
+                () => { pageNumber = GAME_START; changeGameStarted(true); }
             ]
         );
 
         context.beginPath();
         context.lineWidth = 5;
-        x += (textLength + 15);
+        x += (textLength + 20);
         context.moveTo(x, y);
         x += 15;
         y += 13;
@@ -230,6 +263,79 @@ export const Title = (setLevel) => {
         context.lineTo(x, y);
         context.strokeStyle = "white";
         context.stroke();
+    };
+
+    const renderGameOver = () => {
+        const gameOver = "GAME OVER!";
+        let fontSize = 14;
+        const textLength = getTextLength(gameOver, fontSize);
+        let x = (canvas.width - textLength) / 2;
+        let y = 50;
+        draw(canvas, context, gameOver, fontSize, x, y, "#FF2400");
+
+        const deathReason = gameOverReason;
+        const fontSize2 = 5;
+        const textLength2 = getTextLength(deathReason, fontSize2);
+        x = (canvas.width - textLength2) / 2;
+        y = 50 + 120;
+        draw(canvas, context, deathReason, fontSize2, x, y, "white");
+    };
+
+    const renderGameWon = () => {
+        const gameOver = "YOU SAVED THE FOREST!";
+        let fontSize = 14;
+        const textLength = getTextLength(gameOver, fontSize);
+        let x = (canvas.width - textLength) / 2;
+        let y = 50;
+        draw(canvas, context, gameOver, fontSize, x, y, "#0DB50D");
+    };
+
+    const renderHome = () => {
+        const text = "HOME";
+        let fontSize = 5;
+        const textLength = getTextLength(text, fontSize);
+        let x = 50;
+        let y = canvas.height - (10 * fontSize);
+        draw(canvas, context, text, fontSize, x, y);
+
+        clickableRectangles.push([
+                {x, y},
+                {x: x + textLength, y: y + 30},
+                () => { console.log("Trying to go home"); pageNumber = 0; console.log(pageNumber); }
+            ]
+        );
+    };
+
+    const renderRetry = () => {
+        const text = "RETRY";
+        let fontSize = 5;
+        const textLength = getTextLength(text, fontSize);
+        let x = canvas.width - textLength - 50;
+        let y = canvas.height - (10 * fontSize);
+        draw(canvas, context, text, fontSize, x, y);
+
+        clickableRectangles.push([
+                {x, y},
+                {x: x + textLength, y: y + 30},
+                () => { pageNumber = GAME_START; changeGameStarted(true);}
+            ]
+        );
+    };
+
+    const renderNextLevel = () => {
+        const text = "NEXT LEVEL";
+        let fontSize = 5;
+        const textLength = getTextLength(text, fontSize);
+        let x = canvas.width - textLength - 50;
+        let y = canvas.height - (10 * fontSize);
+        draw(canvas, context, text, fontSize, x, y);
+
+        clickableRectangles.push([
+                {x, y},
+                {x: x + textLength, y: y + 30},
+                () => { pageNumber = GAME_START; changeGameStarted(true);}
+            ]
+        );
     };
 
     canvas.addEventListener('mousemove', e => {
@@ -251,7 +357,6 @@ export const Title = (setLevel) => {
 	canvas.addEventListener("click", e => {
 		let handler;
 		clickableRectangles.forEach((rect) => {
-			console.log(rect);
 			if ((rect[0].x <= e.offsetX) && (rect[0].y <= e.offsetY)
 				&& (rect[1].x >= e.offsetX) && (rect[1].y >= e.offsetY)) {
 				handler = rect[2];
@@ -261,25 +366,52 @@ export const Title = (setLevel) => {
 		if (handler) handler();
 	});
 
+	titleInterface.setLevelWon = () => {
+
+    };
+
+    titleInterface.setLevelLost = (reason) => {
+        pageNumber = 3;
+        gameOverReason = reason;
+    };
+
 	titleInterface.update = () => {};
 
 	titleInterface.render = () => {
+	    console.log(pageNumber);
 	    if (pageNumber !== GAME_START) {
             clickableRectangles = [];
             context.fillStyle = 'black';
             context.fillRect(0, 0, canvas.width, canvas.height);
             if (pageNumber === 0) {
+                // Title page
                 renderTitle();
-                renderPlay();
+                if (currentLevel === 1) {
+                    renderPlay();
+                } else {
+                    renderResume();
+                }
             } else if (pageNumber === 1) {
+                // Story page
                 renderStory();
                 if (renderStoryStartTime !== 0) {
                     renderSkip();
                 }
                 renderNext();
             } else if (pageNumber === 2) {
+                // Controls page
                 renderControls();
                 renderStart();
+            } else if (pageNumber === 3) {
+                // Game over
+                renderGameOver();
+                renderRetry();
+                renderHome();
+            } else if (pageNumber === 4) {
+                // Level won
+                renderGameWon();
+                renderNextLevel();
+                renderHome();
             }
         }
 	};

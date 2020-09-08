@@ -23,10 +23,10 @@ export const MiniMap = (numTiles) => {
 	let drawFireBlips = (map) => {
 		for (let i = 0; i < numTiles; i++) {
 			for (let j = 0; j < numTiles; j++) {
-				if (map[i][j] == 1) {
+				if (map[i][j] === 1) {
 					context.fillStyle = "#FFA500";
 					context.fillRect(startX + (2 * i), startY + (2 * j), 2, 2);
-				} else if (map[i][j] == 2) {
+				} else if (map[i][j] === 2) {
 					context.fillStyle = "#8B4513";
 					context.fillRect(startX + (2 * i), startY + (2 * j), 2, 2);
 				} else {
@@ -37,17 +37,10 @@ export const MiniMap = (numTiles) => {
 		}
 	}
 
-	let drawGreenCover = (map) => {
+	let drawGreenCover = (greenCover) => {
 		context.fillStyle = "yellow";
-		let numGreenTiles = 0;
-		for (let i = 0; i < numTiles; i++) {
-			for (let j = 0; j < numTiles; j++) {
-				if (map[i][j] == 0) numGreenTiles++;
-			}
-		}
-		let greenCoverPercentage = ((100.0 * numGreenTiles) / (numTiles * numTiles)).toFixed(2);
 		context.font = "15px arial";
-		context.fillText("Green Cover left: " + greenCoverPercentage + "%", startX, startY + (2 * numTiles) + 20);
+		context.fillText("Green Cover left: " + greenCover + "%", startX, startY + (2 * numTiles) + 20);
 	};
 
 	let drawAliveHumans = (numHumansAlive) => {
@@ -95,12 +88,12 @@ export const MiniMap = (numTiles) => {
     		context.fillRect(startX - 212 + (200 * stamina), startY + 2, 200 *  (1 - stamina), 16);
 	};
 
-	miniMapInterface.render = (lionPosition, map, numHumansAlive, health, stamina) => {
+	miniMapInterface.render = (lionPosition, map, greenCover, numHumansAlive, health, stamina) => {
 		context.globalCompositeOperation = 'source-over';
 		drawBoundingBox();
 		drawFireBlips(map);
 		drawLionBlip(lionPosition);
-		drawGreenCover(map);
+		drawGreenCover(greenCover);
 		drawAliveHumans(numHumansAlive);
 		drawHealthBar(health);
 		drawStaminaBar(stamina);

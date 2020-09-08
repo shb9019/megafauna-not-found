@@ -9,7 +9,7 @@ const walkSprite = new Image();
 walkSprite.src = 'public/assets/walk.png';
 
 // Object to handle the user Lion
-export const Lion = (setLionBlow, setLionSlay) => {
+export const Lion = (setLionBlow, setLionSlay, restartLevel) => {
 	// Initializing all constants used.
 	const lionInterface = {};
 
@@ -89,11 +89,14 @@ export const Lion = (setLionBlow, setLionSlay) => {
 		pressKey(keys[e.key]);
 
 		if (e.key === " ") {
-			setLionSlay();
 			if (getTimeSince(state.lastExtinguishTime) >= extinguishRechargeTime) {
 				setLionBlow();
 				state.lastExtinguishTime = Date.now();
 			}
+		} else if (e.key === "k") {
+			setLionSlay();
+		} else if (e.key === "r") {
+			restartLevel();
 		}
 	};
 
@@ -166,7 +169,7 @@ export const Lion = (setLionBlow, setLionSlay) => {
 		for (let i = Math.max(0, position.x - range); i <= Math.min(mapSize - 1, position.x + range); i++) {
 			for (let j = Math.max(0, position.y - range); j <= Math.min(mapSize - 1, position.y + range); j++) {
 				let distanceFromLion = distance(getMidPointPx({x: i, y: j}, tileSizePx), state.position);
-				if ((distanceFromLion <= (range * tileSizePx)) && (returnMap[i][j] == 1)) {
+				if ((distanceFromLion <= (range * tileSizePx)) && (returnMap[i][j] === 1)) {
 					returnMap[i][j] = 2;
 				}
 			}

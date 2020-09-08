@@ -20,12 +20,36 @@ const Main = () => {
 		context
 	};
 
+	const getLocalStorage = () => {
+		let lsDetails = window.localStorage.getItem("megafaunanotfound");
+		if (lsDetails === null) {
+			window.localStorage.setItem("megafaunanotfound", JSON.stringify({level: 1}));
+			lsDetails = window.localStorage.getItem("megafaunanotfound");
+		}
+		return JSON.parse(lsDetails);
+	};
+
+	const getLevelFromLocalStorage = () => {
+		const lsDetails = getLocalStorage();
+		return lsDetails.level;
+	}
+
+	const setLevelInLocalStorage = (level) => {
+		const lsDetails = getLocalStorage();
+		if (level > lsDetails.level) {
+			lsDetails.level = level;
+			window.localStorage.setItem("megafaunanotfound", lsDetails);
+		}
+	}
+
 	const state = {
 		// True, if lion has extinguished and the move has not been processed
 		didLionBlow: false,
 		// True, if lion has slain and the move has not been processed
 		didLionSlay: false,
-		currentLevel: -1
+		currentLevel: getLevelFromLocalStorage(),
+		isGameStarted: false,
+		minLevelCover: 25
 	};
 
 	const setLionBlow = (value) => {
@@ -36,27 +60,34 @@ const Main = () => {
 		state.didLionSlay = value;
 	};
 
-	let lion, terrain, miniMap, humans;
+	let lion;
+	let terrain, miniMap, humans;
 
 	const resetAll = (level) => {
-		lion = Lion(() => setLionBlow(true), () => setLionSlay(true));
+		if (level === -1) return;
+		lion = Lion(() => setLionBlow(true), () => setLionSlay(true), () => setCurrentLevel(state.currentLevel));
 		terrain = Terrain(canvas);
 		miniMap = MiniMap(mapSize);
 		humans = Humans(context, 5);
 		humans.initializeHumans(terrain.getMap(), lion.tilePosition());
 	}
 
+	const changeIsGameStarted = (value) => {
+		state.isGameStarted = value;
+		if (value === true) {
+			resetAll(state.currentLevel);
+		}
+	}
+
 	const setCurrentLevel = (value) => {
 		state.currentLevel = value;
-		resetAll(state.currentLevel);
 	};
 
 	let shadow = Shadow();
-	let title = Title(setCurrentLevel);
-
+	let title = Title(state.currentLevel, setCurrentLevel, changeIsGameStarted);
 	let loop = GameLoop({  // create the main game loop
 		update: (dt) => { // update the game state
-			if (state.currentLevel !== -1) {
+			if (state.isGameStarted === true) {
 				updateOrigin(lion.absPosition(), mapSize * tileSizePx, mapSize * tileSizePx, origin);
 				lion.update(origin);
 				terrain.updateTerrain();
@@ -76,16 +107,29 @@ const Main = () => {
 				humans.updateTargets(map, lion.tilePosition());
 				let burnPositions = humans.updatePositions();
 				terrain.handleHumanBurn(burnPositions);
+				if (humans.getNumAliveHumans() === 0) {
+					changeIsGameStarted(false);
+					title.setLevelWon();
+					setLevelInLocalStorage(state.currentLevel + 1);
+					setCurrentLevel(state.currentLevel + 1);
+				}
+				if (terrain.getGreenCoverPercentage() < state.minLevelCover) {
+					changeIsGameStarted(false);
+					title.setLevelLost("You lost the forest");
+				} else if (lion.getHealth() === 0) {
+					changeIsGameStarted(false);
+					title.setLevelLost("You burned to death");
+				}
 			}
 			title.update();
 		},
 		render: () => { // render the game state
-			if (state.currentLevel !== -1) {
+			if (state.isGameStarted) {
 				terrain.renderTerrain(origin);
 				lion.render();
 				humans.renderHumans(origin);
 				shadow.addShadow(lion.absPosition(), terrain.getFireTiles(), 200, 82.5, origin);
-				miniMap.render(lion.tilePosition(), terrain.getMap(), humans.getNumAliveHumans(), lion.getHealth(), lion.getBlowStamina());
+				miniMap.render(lion.tilePosition(), terrain.getMap(), terrain.getGreenCoverPercentage(), humans.getNumAliveHumans(), lion.getHealth(), lion.getBlowStamina());
 			}
 			title.render();
 		}

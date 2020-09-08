@@ -291,8 +291,8 @@ export const getTextLength = (string, size) => {
     return (currX - size);
 };
 
-export function draw(canvas, context, string, size, startX, startY) {
-    context.fillStyle = 'white';
+export function draw(canvas, context, string, size, startX, startY, color = 'white') {
+    context.fillStyle = color;
     let blocks = getPositions(canvas, context, string, size, startX, startY);
 
     for (let i = 0; i < blocks.length; i++) {
@@ -311,7 +311,6 @@ export const getPositions = (canvas, context, string, size, startX, startY) => {
         }
     }
 
-    context.fillStyle = 'white';
     var currX = startX;
     for (i = 0; i < needed.length; i++) {
         letter = needed[i];
@@ -332,7 +331,7 @@ export const getPositions = (canvas, context, string, size, startX, startY) => {
             addX = Math.max(addX, row.length * size);
             currY += size;
         }
-        if (i == (needed.length - 1)) {
+        if (i === (needed.length - 1)) {
             currX += size;
         } else {
             currX += size + addX;
