@@ -24,7 +24,8 @@ const Main = () => {
 		// True, if lion has extinguished and the move has not been processed
 		didLionBlow: false,
 		// True, if lion has slain and the move has not been processed
-		didLionSlay: false
+		didLionSlay: false,
+		currentLevel: -1
 	};
 
 	const setLionBlow = (value) => {
@@ -35,45 +36,57 @@ const Main = () => {
 		state.didLionSlay = value;
 	};
 
-	const lion = Lion(() => setLionBlow(true), () => setLionSlay(true));
+	let lion, terrain, miniMap, humans;
 
-	const terrain = Terrain(canvas);
+	const resetAll = (level) => {
+		lion = Lion(() => setLionBlow(true), () => setLionSlay(true));
+		terrain = Terrain(canvas);
+		miniMap = MiniMap(mapSize);
+		humans = Humans(context, 5);
+		humans.initializeHumans(terrain.getMap(), lion.tilePosition());
+	}
 
-	let miniMap = MiniMap(mapSize);
-	let humans = Humans(context, 5);
-	humans.initializeHumans(terrain.getMap(), lion.tilePosition());
+	const setCurrentLevel = (value) => {
+		state.currentLevel = value;
+		resetAll(state.currentLevel);
+	};
+
 	let shadow = Shadow();
-	let title = Title();
+	let title = Title(setCurrentLevel);
 
 	let loop = GameLoop({  // create the main game loop
 		update: (dt) => { // update the game state
-			updateOrigin(lion.absPosition(), mapSize * tileSizePx, mapSize * tileSizePx, origin);
-			lion.update(origin);
-			terrain.updateTerrain();
-			
-			let map = terrain.getMap();
-			lion.fireDamage(map);
-			if (state.didLionBlow) {
-				terrain.handleLionBlow(lion.blow(map));
-				setLionBlow(false);
-			}
+			if (state.currentLevel !== -1) {
+				updateOrigin(lion.absPosition(), mapSize * tileSizePx, mapSize * tileSizePx, origin);
+				lion.update(origin);
+				terrain.updateTerrain();
 
-			if (state.didLionSlay) {
-				humans.handleLionSlay(lion.absPosition(), 200);
-				setLionSlay(false);
-			}
+				let map = terrain.getMap();
+				lion.fireDamage(map);
+				if (state.didLionBlow) {
+					terrain.handleLionBlow(lion.blow(map));
+					setLionBlow(false);
+				}
 
-			humans.updateTargets(map, lion.tilePosition());
-			let burnPositions = humans.updatePositions();
-			terrain.handleHumanBurn(burnPositions);
+				if (state.didLionSlay) {
+					humans.handleLionSlay(lion.absPosition(), 200);
+					setLionSlay(false);
+				}
+
+				humans.updateTargets(map, lion.tilePosition());
+				let burnPositions = humans.updatePositions();
+				terrain.handleHumanBurn(burnPositions);
+			}
 			title.update();
 		},
 		render: () => { // render the game state
-			terrain.renderTerrain(origin);
-			lion.render();
-			humans.renderHumans(origin);
-			shadow.addShadow(lion.absPosition(), terrain.getFireTiles(), 200, 82.5, origin);
-			miniMap.render(lion.tilePosition(), terrain.getMap(), humans.getNumAliveHumans(), lion.getHealth(), lion.getBlowStamina());
+			if (state.currentLevel !== -1) {
+				terrain.renderTerrain(origin);
+				lion.render();
+				humans.renderHumans(origin);
+				shadow.addShadow(lion.absPosition(), terrain.getFireTiles(), 200, 82.5, origin);
+				miniMap.render(lion.tilePosition(), terrain.getMap(), humans.getNumAliveHumans(), lion.getHealth(), lion.getBlowStamina());
+			}
 			title.render();
 		}
 	});

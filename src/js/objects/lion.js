@@ -88,7 +88,7 @@ export const Lion = (setLionBlow, setLionSlay) => {
 	window.onkeydown = (e) => {
 		pressKey(keys[e.key]);
 
-		if (e.key == " ") {
+		if (e.key === " ") {
 			setLionSlay();
 			if (getTimeSince(state.lastExtinguishTime) >= extinguishRechargeTime) {
 				setLionBlow();
@@ -177,7 +177,7 @@ export const Lion = (setLionBlow, setLionSlay) => {
 
 	lionInterface.fireDamage = (map) => {
 		let position = tilePosition();
-		if (map[position.x][position.y] == 1) {
+		if (map[position.x][position.y] === 1) {
 			state.health = Math.max(0, state.health - fireDamage);
 		}
 	}
