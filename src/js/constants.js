@@ -23,8 +23,8 @@ export const lionParameters = {
 		x: 32,
 		y: 32
 	},
-	speed: 5.0,
-	extinguishRange: 20,
+	speed: 10.0,
+	extinguishRange: 15,
 	extinguishRechargeTime: 5000,
 	initialHealth: 100,
 	fireDamage: 2,
@@ -55,3 +55,35 @@ export const keys = {
 	"ArrowRight": "right",
 	" ": "space"
 };
+
+export const levelConstants = [{
+	lion: {
+		extinguishRechargeTime: 2000,
+		fireDamage: 2,
+		speed: 10.0
+	},
+	human: {
+		w1: 1.0,
+		w2: 0.0,
+		speed: 8.0,
+		targetUpdateInterval: 3000,
+		minBurnInterval: 8000,
+		maxBurnInterval: 10000,
+		numHumans: 5
+	}
+}, {
+	lion: {
+		extinguishRechargeTime: 3000,
+		fireDamage: 4,
+		speed: 10.0
+	},
+	human: {
+		w1: 1.0,
+		w2: 0.0,
+		speed: 9.0,
+		targetUpdateInterval: 3000,
+		minBurnInterval: 8000,
+		maxBurnInterval: 10000,
+		numHumans: 3
+	}
+}];

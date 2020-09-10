@@ -2,8 +2,8 @@ import { Queue } from '../classes/queue';
 import { getMidPointPx, copy, getTimeSince, create2DArray, distance, getRandomIndex, randomIntFromInterval } from '../helper';
 import { mapSize, directions, humanParameters, tileSizePx } from '../constants';
 
-export const Humans = (context, numHumans) => {
-	const {w1, w2, targetUpdateInterval, speed, minBurnInterval, maxBurnInterval} = humanParameters;
+export const Humans = (context, humanConstants) => {
+	const {w1, w2, targetUpdateInterval, speed, minBurnInterval, maxBurnInterval, numHumans} = humanConstants;
 
 	let humans = [];
 

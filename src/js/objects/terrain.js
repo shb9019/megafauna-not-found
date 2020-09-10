@@ -55,7 +55,8 @@ export const Terrain = (canvas) => {
 				if (map[i][j] == 0) {
 					context.drawImage(grassTile, adjPos.x, adjPos.y, tileSizePx, tileSizePx);
 				} else if (map[i][j] == 1) {
-					context.drawImage(fireTile, 0, 0, 64, 64, adjPos.x, adjPos.y, tileSizePx, tileSizePx);
+					let frame = Math.floor(getTimeSince(0) / 50) % 45;
+					context.drawImage(fireTile, frame * 16, 0, 16, 16, adjPos.x, adjPos.y, tileSizePx, tileSizePx);
 				} else if (map[i][j] == 2) {
 					context.drawImage(burntTile, adjPos.x, adjPos.y, tileSizePx, tileSizePx);
 				}
@@ -67,7 +68,7 @@ export const Terrain = (canvas) => {
 		if (getTimeSince(lastUpdateTime) < fireSpreadRate) return;
 
 		lastUpdateTime = Date.now();
-		let updatedMap = JSON.parse(JSON.stringify(map));
+		let updatedMap = copy(map);
 		for (let i = 0; i < mapSize; i++) {
 			for (let j = 0; j < mapSize; j++) {
 				if (map[i][j] == 1) {

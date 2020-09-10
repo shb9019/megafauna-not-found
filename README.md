@@ -23,11 +23,11 @@ Current output zip size: `7099 bytes`
 [x] Remove all dependency on Kontra
 [x] Add blow animation
 [x] Add kill animation
-[] Add tiles for land and barren land
+[x] Add tiles for land and barren land
 [] Add animations for Humans
 [] Add animations for Lions
 [] Add levels for the game
-[] Include assets into zip file
+[x] Include assets into zip file
 [] Add music
 [] Show levels list (Optional)
 

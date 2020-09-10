@@ -5,7 +5,7 @@ import { Humans } from './objects/human';
 import { MiniMap } from './objects/minimap';
 import { Shadow } from './objects/shadow';
 import { Title } from './objects/title';
-import { mapSize, tileSizePx, initialCameraPos } from './constants';
+import { mapSize, tileSizePx, initialCameraPos, levelConstants } from './constants';
 
 const canvas = document.getElementById('main');
 const context = canvas.getContext('2d');
@@ -49,7 +49,8 @@ const Main = () => {
 		didLionSlay: false,
 		currentLevel: getLevelFromLocalStorage(),
 		isGameStarted: false,
-		minLevelCover: 25
+		minLevelCover: 25,
+		gamePaused: false
 	};
 
 	const setLionBlow = (value) => {
@@ -60,15 +61,16 @@ const Main = () => {
 		state.didLionSlay = value;
 	};
 
-	let lion = Lion(context, () => setLionBlow(true), () => setLionSlay(true), () => setCurrentLevel(state.currentLevel));;
+	let lion;
 	let terrain, miniMap, humans;
 
 	const resetAll = (level) => {
+		state.gamePaused = false;
 		if (level === -1) return;
-		lion = Lion(context, () => setLionBlow(true), () => setLionSlay(true), () => setCurrentLevel(state.currentLevel));
+		lion = Lion(context, levelConstants[level - 1].lion, () => setLionBlow(true), () => setLionSlay(true), () => setCurrentLevel(state.currentLevel), togglePauseGame);
 		terrain = Terrain(canvas);
 		miniMap = MiniMap(mapSize);
-		humans = Humans(context, 5);
+		humans = Humans(context, levelConstants[level - 1].human);
 		humans.initializeHumans(terrain.getMap(), lion.tilePosition());
 	}
 
@@ -83,10 +85,29 @@ const Main = () => {
 		state.currentLevel = value;
 	};
 
+	const pauseGame = () => {
+		state.gamePaused = true;
+		title.pause();
+	};
+
+	const resumeGame = () => {
+		state.gamePaused = false;
+		title.resume();
+	};
+
 	let shadow = Shadow();
-	let title = Title(state.currentLevel, setCurrentLevel, changeIsGameStarted);
+	let title = Title(state.currentLevel, setCurrentLevel, changeIsGameStarted, pauseGame, resumeGame);
+
+	const togglePauseGame = () => {
+		if (state.gamePaused) {
+			resumeGame();
+		} else {
+			pauseGame();
+		}
+	};
+
 	const update = () => { // update the game state
-		if (state.isGameStarted === true) {
+		if (!state.gamePaused && state.isGameStarted === true) {
 			updateOrigin(lion.absPosition(), mapSize * tileSizePx, mapSize * tileSizePx, origin);
 			lion.update(origin);
 			terrain.updateTerrain();
@@ -124,7 +145,7 @@ const Main = () => {
 		title.update();
 	};
 	const render = () => { // render the game state
-		if (state.isGameStarted) {
+		if (!state.gamePaused && state.isGameStarted) {
 			terrain.renderTerrain(origin);
 			lion.render(state.stamina);
 			humans.renderHumans(origin);

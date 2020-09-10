@@ -6,7 +6,7 @@ import {getTimeSince} from "../helper";
 let fireSprite = new Image();
 fireSprite.src = 'public/assets/fire2.png';
 
-export const Title = (currentLevel, setLevel, changeGameStarted) => {
+export const Title = (currentLevel, setLevel, changeGameStarted, pauseGame, resumeGame) => {
 	const titleInterface = {};
 	let clickableRectangles = [];
 
@@ -216,23 +216,21 @@ export const Title = (currentLevel, setLevel, changeGameStarted) => {
         draw(canvas, context, text, fontSize, x, y);
 
         const controls = [
-            "W     - Move Up",
-            "A     - Move Left",
-            "S     - Move Down",
-            "D     - Move Right",
+            "WASD  - Move",
             "",
-            "K     - Kill Sapiens in range",
+            "K     - Kill humans in range",
             "Space - Extinguish Fire",
-			"R     - Restart Level",
+			"Esc   - Pause",
 			"",
-			"Don't walk into Fire!"
+            "",
+			"Goal: Kill all humans before 75% of the forest is burnt."
         ];
-        context.font = '30px Courier New';
+        context.font = '25px Courier New';
         y = 230;
         x = 80;
         for (let i = 0; i < controls.length; i++) {
             context.fillText(controls[i], x, y);
-            y += 33;
+            y += 28;
         }
     };
 
@@ -315,11 +313,10 @@ export const Title = (currentLevel, setLevel, changeGameStarted) => {
         draw(canvas, context, text, fontSize, x, y);
 
         clickableRectangles.push([
-                {x, y},
-                {x: x + textLength, y: y + 30},
-                () => { pageNumber = GAME_START; changeGameStarted(true);}
-            ]
-        );
+            {x, y},
+            {x: x + textLength, y: y + 30},
+            () => { pageNumber = GAME_START; changeGameStarted(true);}    
+        ]);
     };
 
     const renderNextLevel = () => {
@@ -333,6 +330,36 @@ export const Title = (currentLevel, setLevel, changeGameStarted) => {
         clickableRectangles.push([
                 {x, y},
                 {x: x + textLength, y: y + 30},
+                () => { pageNumber = GAME_START; changeGameStarted(true);}
+            ]
+        );
+    };
+
+    const renderPauseButtons = () => {
+        let text = "HOME";
+        let fontSize = 8;
+        let textLength = getTextLength(text, fontSize);
+        let x = (canvas.width / 4) - (textLength / 2);
+        let y = (canvas.height / 2) - 20;
+        draw(canvas, context, text, fontSize, x, y);
+
+        clickableRectangles.push([
+                {x, y},
+                {x: x + textLength, y: y + 40},
+                () => { pageNumber = 0; changeGameStarted(false);}
+            ]
+        );
+
+        text = "RESTART LEVEL";
+        fontSize = 8;
+        textLength = getTextLength(text, fontSize);
+        x = (3 * canvas.width / 4) - (textLength / 2);
+        y = (canvas.height / 2) - 20;
+        draw(canvas, context, text, fontSize, x, y);
+
+        clickableRectangles.push([
+                {x, y},
+                {x: x + textLength, y: y + 40},
                 () => { pageNumber = GAME_START; changeGameStarted(true);}
             ]
         );
@@ -375,6 +402,18 @@ export const Title = (currentLevel, setLevel, changeGameStarted) => {
         gameOverReason = reason;
     };
 
+    titleInterface.pause = () => {
+        if (pageNumber === GAME_START) {
+            pageNumber = 5;
+        }
+    };
+
+    titleInterface.resume = () => {
+        if (pageNumber === 5) {
+            pageNumber = GAME_START;
+        }
+    };
+
 	titleInterface.update = () => {};
 
 	titleInterface.render = () => {
@@ -411,6 +450,8 @@ export const Title = (currentLevel, setLevel, changeGameStarted) => {
                 renderGameWon();
                 renderNextLevel();
                 renderHome();
+            } else if (pageNumber === 5) {
+                renderPauseButtons();
             }
         } else {
         	context.clearRect(0, 0, canvas.width, canvas.height);

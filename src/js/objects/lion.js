@@ -9,18 +9,21 @@ const walkSprite = new Image();
 walkSprite.src = 'public/assets/walk.png';
 
 // Object to handle the user Lion
-export const Lion = (context, setLionBlow, setLionSlay, restartLevel) => {
+export const Lion = (context, lionConstants, setLionBlow, setLionSlay, restartLevel, togglePauseGame) => {
 	// Initializing all constants used.
 	const lionInterface = {};
 
 	const mapSizePx = mapSize * tileSizePx;
 	const {
-		speed,
-		fireDamage,
-		extinguishRange,
-		extinguishRechargeTime,
-		killRange
+		killRange,
+		extinguishRange
 	} = lionParameters;
+
+	const {
+		extinguishRechargeTime,
+		fireDamage,
+		speed
+	} = lionConstants;
 	
 	let lastBlowTime = 0;
 	let lastKillTime = 0;
@@ -82,6 +85,8 @@ export const Lion = (context, setLionBlow, setLionSlay, restartLevel) => {
 			lastKillTime = new Date();
 		} else if (e.key === "r") {
 			restartLevel();
+		} else if (e.key === "Escape") {
+			togglePauseGame();
 		}
 	};
 
