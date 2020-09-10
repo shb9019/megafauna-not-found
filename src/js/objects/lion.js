@@ -20,6 +20,10 @@ export const Lion = (context, setLionBlow, setLionSlay, restartLevel) => {
 		extinguishRange,
 		extinguishRechargeTime
 	} = lionParameters;
+	
+	let lastBlowTime = 0;
+	let lastStamina = 1;
+	const blowAnimationTime = 250;
 
 	const IdleSpriteSheet = () => SpriteSheet(context, idleSprite, 64, 64, 5, 250);
 	const WalkSpriteSheet = () => SpriteSheet(context, walkSprite, 64, 64, 2, 500);
@@ -69,10 +73,7 @@ export const Lion = (context, setLionBlow, setLionSlay, restartLevel) => {
 		pressKey(keys[e.key]);
 
 		if (e.key === " ") {
-			if (getTimeSince(state.lastExtinguishTime) >= extinguishRechargeTime) {
-				setLionBlow();
-				state.lastExtinguishTime = Date.now();
-			}
+			setLionBlow();
 		} else if (e.key === "k") {
 			setLionSlay();
 		} else if (e.key === "r") {
@@ -119,6 +120,23 @@ export const Lion = (context, setLionBlow, setLionSlay, restartLevel) => {
 		}
 	};
 
+	const renderBlow = (blowStamina) => {
+		let fraction = getTimeSince(lastBlowTime) / blowAnimationTime;
+		context.strokeStyle = 'white';
+		context.lineWidth = 3;
+		context.beginPath();
+		context.arc(sprite.x, sprite.y, lastStamina * (extinguishRange / 2) * tileSizePx * fraction, 0, Math.PI*2, false);
+		context.stroke();
+	};
+
+	const renderKill = () => {
+		context.strokeStyle = 'red';
+		context.lineWidth = 3;
+		context.beginPath();
+		context.arc(sprite.x, sprite.y, lastStamina * (extinguishRange / 2) * tileSizePx * fraction, 0, Math.PI*2, false);
+		context.stroke();
+	};
+
 	// Functions exposed to main
 	lionInterface.update = (origin) => {
 		updatePosition();
@@ -128,8 +146,11 @@ export const Lion = (context, setLionBlow, setLionSlay, restartLevel) => {
 		sprite.animation.update();
 	};
 
-	lionInterface.render = () => {
+	lionInterface.render = (blowStamina) => {
 		sprite.animation.render(sprite.x, sprite.y, sprite.rotation);
+		if (getTimeSince(lastBlowTime) <= blowAnimationTime) {
+			renderBlow(blowStamina);
+		}
 	}
 
 	lionInterface.absPosition = () => {
@@ -140,11 +161,12 @@ export const Lion = (context, setLionBlow, setLionSlay, restartLevel) => {
 		return tilePosition();
 	}
 
-	lionInterface.blow = (map) => {
+	lionInterface.blow = (map, blowStamina) => {
 		const returnMap = copy(map);
 		let position = tilePosition();
 
-		let range = (extinguishRange / 2);
+		let range = Math.ceil(extinguishRange * blowStamina / 2);
+		console.log(blowStamina);
 
 		for (let i = Math.max(0, position.x - range); i <= Math.min(mapSize - 1, position.x + range); i++) {
 			for (let j = Math.max(0, position.y - range); j <= Math.min(mapSize - 1, position.y + range); j++) {
@@ -154,6 +176,9 @@ export const Lion = (context, setLionBlow, setLionSlay, restartLevel) => {
 				}
 			}
 		}
+		lastBlowTime = new Date();
+		lastStamina = blowStamina;
+		state.lastExtinguishTime = Date.now();
 
 		return returnMap;
 	}

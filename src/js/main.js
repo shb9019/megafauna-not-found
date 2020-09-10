@@ -92,9 +92,10 @@ const Main = () => {
 			terrain.updateTerrain();
 
 			let map = terrain.getMap();
+			state.stamina = lion.getBlowStamina();
 			lion.fireDamage(map);
 			if (state.didLionBlow) {
-				terrain.handleLionBlow(lion.blow(map));
+				terrain.handleLionBlow(lion.blow(map, state.stamina));
 				setLionBlow(false);
 			}
 
@@ -125,7 +126,7 @@ const Main = () => {
 	const render = () => { // render the game state
 		if (state.isGameStarted) {
 			terrain.renderTerrain(origin);
-			lion.render();
+			lion.render(state.stamina);
 			humans.renderHumans(origin);
 			shadow.addShadow(lion.absPosition(), terrain.getFireTiles(), 200, 82.5, origin);
 			miniMap.render(lion.tilePosition(), terrain.getMap(), terrain.getGreenCoverPercentage(), humans.getNumAliveHumans(), lion.getHealth(), lion.getBlowStamina());

@@ -24,7 +24,7 @@ export const lionParameters = {
 		y: 32
 	},
 	speed: 5.0,
-	extinguishRange: 10,
+	extinguishRange: 20,
 	extinguishRechargeTime: 5000,
 	initialHealth: 100,
 	fireDamage: 2

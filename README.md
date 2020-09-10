@@ -19,7 +19,7 @@ Current output zip size: `7099 bytes`
 
 ## TODO
 
-[] Generalize the implementation of SpriteSheet and Sprite
+[x] Generalize the implementation of SpriteSheet
 [x] Remove all dependency on Kontra
 [] Add blow animation
 [] Add kill animation
@@ -31,6 +31,8 @@ Current output zip size: `7099 bytes`
 [] Add music
 [] Show levels list (Optional)
 
+
+Idea: context.arc with increasing radius without beginPath
 
 ## Getting started
 
