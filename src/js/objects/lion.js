@@ -1,5 +1,6 @@
 import {mapSize, tileSizePx, lionParameters, keys} from '../constants';
 import {copy, getTimeSince, distance, getMidPointPx} from '../helper';
+import { SpriteSheet } from './spriteSheet';
 
 const idleSprite = new Image();
 idleSprite.src = 'public/assets/idle.png';
@@ -20,49 +21,8 @@ export const Lion = (context, setLionBlow, setLionSlay, restartLevel) => {
 		extinguishRechargeTime
 	} = lionParameters;
 
-	const IdleSpriteSheet = () => {
-		const image = idleSprite;
-		const frameWidth = 64;
-		const frameHeight = 64;
-		const totalFrameCount = 5;
-		const frameRate = 250;
-		let currentFrame = 0;
-
-		let spriteSheetInterface = {};
-		spriteSheetInterface.update = () => {
-			let time = Math.floor(new Date() / frameRate);
-			currentFrame = time % totalFrameCount;
-		};
-		spriteSheetInterface.render = (x, y, rotation, width = frameWidth, height = frameHeight) => {
-			context.save();
-			context.translate(x, y);
-			context.rotate(rotation);
-			context.drawImage(image, 0, currentFrame * frameHeight, frameWidth, frameHeight, - frameWidth / 2, - frameHeight / 2, width, height);
-			context.restore();
-		};
-
-		return spriteSheetInterface;
-	};
-
-	const WalkSpriteSheet = () => {
-		const image = walkSprite;
-		const frameWidth = 64;
-		const frameHeight = 64;
-		const totalFrameCount = 2;
-		const frameRate = 3;
-		let currentFrame = 0;
-
-		let spriteSheetInterface = {};
-		spriteSheetInterface.update = () => {
-			let time = new Date() / frameRate;
-			currentFrame = time % totalFrameCount;
-		};
-		spriteSheetInterface.render = (x, y, rotation, width = frameWidth, height = frameHeight) => {
-			context.drawImage(image, currentFrame * frameWidth, 0, frameWidth, frameHeight, x, y, width, height);
-		};
-
-		return spriteSheetInterface;
-	};
+	const IdleSpriteSheet = () => SpriteSheet(context, idleSprite, 64, 64, 5, 250);
+	const WalkSpriteSheet = () => SpriteSheet(context, walkSprite, 64, 64, 2, 500);
 
 	// Initializing all variables.
 	const state = {
