@@ -5,7 +5,7 @@ let grassTile = new Image();
 grassTile.src = 'public/assets/grass.png';
 
 let fireTile = new Image();
-fireTile.src = 'public/assets/fire.png';
+fireTile.src = 'public/assets/fire2.png';
 
 let burntTile = new Image();
 burntTile.src = 'public/assets/burnt.png';
@@ -55,7 +55,7 @@ export const Terrain = (canvas) => {
 				if (map[i][j] == 0) {
 					context.drawImage(grassTile, adjPos.x, adjPos.y, tileSizePx, tileSizePx);
 				} else if (map[i][j] == 1) {
-					context.drawImage(fireTile, adjPos.x, adjPos.y, tileSizePx, tileSizePx);
+					context.drawImage(fireTile, 0, 0, 64, 64, adjPos.x, adjPos.y, tileSizePx, tileSizePx);
 				} else if (map[i][j] == 2) {
 					context.drawImage(burntTile, adjPos.x, adjPos.y, tileSizePx, tileSizePx);
 				}
