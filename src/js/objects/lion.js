@@ -1,4 +1,3 @@
-let { Sprite, SpriteSheet } = kontra;
 import {mapSize, tileSizePx, lionParameters, keys} from '../constants';
 import {copy, getTimeSince, distance, getMidPointPx} from '../helper';
 
@@ -9,7 +8,7 @@ const walkSprite = new Image();
 walkSprite.src = 'public/assets/walk.png';
 
 // Object to handle the user Lion
-export const Lion = (setLionBlow, setLionSlay, restartLevel) => {
+export const Lion = (context, setLionBlow, setLionSlay, restartLevel) => {
 	// Initializing all constants used.
 	const lionInterface = {};
 
@@ -21,29 +20,49 @@ export const Lion = (setLionBlow, setLionSlay, restartLevel) => {
 		extinguishRechargeTime
 	} = lionParameters;
 
-	const idleSpriteSheet = SpriteSheet({
-		image: idleSprite,
-		frameWidth: 64,
-		frameHeight: 64,
-		animations: {
-			idle: {
-				frames: '0..4',
-				frameRate: 5
-			}
-		}
-	});
+	const IdleSpriteSheet = () => {
+		const image = idleSprite;
+		const frameWidth = 64;
+		const frameHeight = 64;
+		const totalFrameCount = 5;
+		const frameRate = 250;
+		let currentFrame = 0;
 
-	const walkSpriteSheet = SpriteSheet({
-		image: walkSprite,
-		frameWidth: 64,
-		frameHeight: 64,
-		animations: {
-			idle: {
-				frames: '0..1',
-				frameRate: 2
-			}
-		}
-	});
+		let spriteSheetInterface = {};
+		spriteSheetInterface.update = () => {
+			let time = Math.floor(new Date() / frameRate);
+			currentFrame = time % totalFrameCount;
+		};
+		spriteSheetInterface.render = (x, y, rotation, width = frameWidth, height = frameHeight) => {
+			context.save();
+			context.translate(x, y);
+			context.rotate(rotation);
+			context.drawImage(image, 0, currentFrame * frameHeight, frameWidth, frameHeight, - frameWidth / 2, - frameHeight / 2, width, height);
+			context.restore();
+		};
+
+		return spriteSheetInterface;
+	};
+
+	const WalkSpriteSheet = () => {
+		const image = walkSprite;
+		const frameWidth = 64;
+		const frameHeight = 64;
+		const totalFrameCount = 2;
+		const frameRate = 3;
+		let currentFrame = 0;
+
+		let spriteSheetInterface = {};
+		spriteSheetInterface.update = () => {
+			let time = new Date() / frameRate;
+			currentFrame = time % totalFrameCount;
+		};
+		spriteSheetInterface.render = (x, y, rotation, width = frameWidth, height = frameHeight) => {
+			context.drawImage(image, currentFrame * frameWidth, 0, frameWidth, frameHeight, x, y, width, height);
+		};
+
+		return spriteSheetInterface;
+	};
 
 	// Initializing all variables.
 	const state = {
@@ -61,12 +80,13 @@ export const Lion = (setLionBlow, setLionSlay, restartLevel) => {
 		};
 	}
 
-	const sprite = Sprite({
+	const sprite = {
 		x: state.position.x,
 		y: state.position.y,
+		rotation: 0,
 		anchor: {x: 0.5, y: 0.5},
-		animations: idleSpriteSheet.animations
-	});
+		animation: IdleSpriteSheet()
+	};
 
 	// All key press logic
 	const pressKey = (key) => {
@@ -145,11 +165,11 @@ export const Lion = (setLionBlow, setLionSlay, restartLevel) => {
 		updateRotation();
 		sprite.x = origin.x + state.position.x;
 		sprite.y = origin.y + state.position.y;
-		sprite.update();
+		sprite.animation.update();
 	};
 
 	lionInterface.render = () => {
-		sprite.render();
+		sprite.animation.render(sprite.x, sprite.y, sprite.rotation);
 	}
 
 	lionInterface.absPosition = () => {

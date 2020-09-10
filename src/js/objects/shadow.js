@@ -1,9 +1,8 @@
-let { init, GameLoop } = kontra;
-
 export const Shadow = () => {
 	const shadowInterface = {};
 
-	let { canvas, context } = init('shadow');
+	const canvas = document.getElementById('shadow');
+	const context = canvas.getContext('2d');
 	canvas.width = window.innerWidth;
 	canvas.height = window.innerHeight;
 

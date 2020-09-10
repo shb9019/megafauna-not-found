@@ -15,7 +15,22 @@ and clean. Using `gulp` and `rollup`, this repo offers the following features:
 - Inlining for all CSS and JavaScript assets (single `index.min.html` output)
 - Zip packaging of the inlined output for final competition submission
 
-Current output zip size: `639 bytes`
+Current output zip size: `7099 bytes`
+
+## TODO
+
+[] Generalize the implementation of SpriteSheet and Sprite
+[x] Remove all dependency on Kontra
+[] Add blow animation
+[] Add kill animation
+[] Add animated tiles for land
+[] Add animations for Humans
+[] Add animations for Lions
+[] Add levels for the game
+[] Include assets into zip file
+[] Add music
+[] Show levels list (Optional)
+
 
 ## Getting started
 

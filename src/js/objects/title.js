@@ -1,6 +1,5 @@
 import {tileSizePx} from "../constants";
 
-let { init, Sprite, SpriteSheet } = kontra;
 import { draw, getTextLength, getPositions } from '../classes/font';
 import {getTimeSince} from "../helper";
 
@@ -15,7 +14,8 @@ export const Title = (currentLevel, setLevel, changeGameStarted) => {
 	let gameOverReason = "";
 	const GAME_START = 99;
 
-	let { canvas, context } = init('title');
+	const canvas = document.getElementById('title');
+	const context = canvas.getContext('2d');
 	let renderStoryStartTime = 0;
 
 	canvas.width = window.innerWidth;
@@ -301,7 +301,7 @@ export const Title = (currentLevel, setLevel, changeGameStarted) => {
         clickableRectangles.push([
                 {x, y},
                 {x: x + textLength, y: y + 30},
-                () => { console.log("Trying to go home"); pageNumber = 0; console.log(pageNumber); }
+                () => { pageNumber = 0; }
             ]
         );
     };
@@ -367,7 +367,7 @@ export const Title = (currentLevel, setLevel, changeGameStarted) => {
 	});
 
 	titleInterface.setLevelWon = () => {
-
+        pageNumber = 4;
     };
 
     titleInterface.setLevelLost = (reason) => {
@@ -378,7 +378,6 @@ export const Title = (currentLevel, setLevel, changeGameStarted) => {
 	titleInterface.update = () => {};
 
 	titleInterface.render = () => {
-	    console.log(pageNumber);
 	    if (pageNumber !== GAME_START) {
             clickableRectangles = [];
             context.fillStyle = 'black';
@@ -413,6 +412,8 @@ export const Title = (currentLevel, setLevel, changeGameStarted) => {
                 renderNextLevel();
                 renderHome();
             }
+        } else {
+        	context.clearRect(0, 0, canvas.width, canvas.height);
         }
 	};
 

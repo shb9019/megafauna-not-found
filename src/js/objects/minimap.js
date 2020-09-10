@@ -1,11 +1,10 @@
-let { init } = kontra;
-
 export const MiniMap = (numTiles) => {
 	let miniMapInterface = {};
 	let startX = window.innerWidth - 11 - (2 * numTiles);
 	let startY = 12;
 
-	const { canvas, context } = init('shadow');
+	const canvas = document.getElementById('shadow');
+	const context = canvas.getContext('2d');
 
 	let drawBoundingBox = () => {
 		let startX = window.innerWidth - 12 - (2 * numTiles);

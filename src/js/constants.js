@@ -41,12 +41,16 @@ export const humanParameters = {
 
 export const keys = {
 	"s": "down",
+	"S": "down",
 	"ArrowDown": "down",
 	"w": "up",
+	"W": "up",
 	"ArrowUp": "up",
 	"a": "left",
+	"A": "left",
 	"ArrowLeft": "left",
 	"d": "right",
+	"D": "right",
 	"ArrowRight": "right",
 	" ": "space"
 };

@@ -1,4 +1,3 @@
-let { init, Sprite, SpriteSheet, GameLoop, TileEngine } = kontra;
 import { copy, calculateAngle, updateOrigin } from './helper';
 import { Terrain } from './objects/terrain';
 import { Lion } from './objects/lion';
@@ -8,7 +7,8 @@ import { Shadow } from './objects/shadow';
 import { Title } from './objects/title';
 import { mapSize, tileSizePx, initialCameraPos } from './constants';
 
-let { canvas, context } = init();
+const canvas = document.getElementById('main');
+const context = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
@@ -38,7 +38,7 @@ const Main = () => {
 		const lsDetails = getLocalStorage();
 		if (level > lsDetails.level) {
 			lsDetails.level = level;
-			window.localStorage.setItem("megafaunanotfound", lsDetails);
+			window.localStorage.setItem("megafaunanotfound", JSON.stringify(lsDetails));
 		}
 	}
 
@@ -60,12 +60,12 @@ const Main = () => {
 		state.didLionSlay = value;
 	};
 
-	let lion;
+	let lion = Lion(context, () => setLionBlow(true), () => setLionSlay(true), () => setCurrentLevel(state.currentLevel));;
 	let terrain, miniMap, humans;
 
 	const resetAll = (level) => {
 		if (level === -1) return;
-		lion = Lion(() => setLionBlow(true), () => setLionSlay(true), () => setCurrentLevel(state.currentLevel));
+		lion = Lion(context, () => setLionBlow(true), () => setLionSlay(true), () => setCurrentLevel(state.currentLevel));
 		terrain = Terrain(canvas);
 		miniMap = MiniMap(mapSize);
 		humans = Humans(context, 5);
@@ -85,57 +85,63 @@ const Main = () => {
 
 	let shadow = Shadow();
 	let title = Title(state.currentLevel, setCurrentLevel, changeIsGameStarted);
-	let loop = GameLoop({  // create the main game loop
-		update: (dt) => { // update the game state
-			if (state.isGameStarted === true) {
-				updateOrigin(lion.absPosition(), mapSize * tileSizePx, mapSize * tileSizePx, origin);
-				lion.update(origin);
-				terrain.updateTerrain();
+	const update = () => { // update the game state
+		if (state.isGameStarted === true) {
+			updateOrigin(lion.absPosition(), mapSize * tileSizePx, mapSize * tileSizePx, origin);
+			lion.update(origin);
+			terrain.updateTerrain();
 
-				let map = terrain.getMap();
-				lion.fireDamage(map);
-				if (state.didLionBlow) {
-					terrain.handleLionBlow(lion.blow(map));
-					setLionBlow(false);
-				}
-
-				if (state.didLionSlay) {
-					humans.handleLionSlay(lion.absPosition(), 200);
-					setLionSlay(false);
-				}
-
-				humans.updateTargets(map, lion.tilePosition());
-				let burnPositions = humans.updatePositions();
-				terrain.handleHumanBurn(burnPositions);
-				if (humans.getNumAliveHumans() === 0) {
-					changeIsGameStarted(false);
-					title.setLevelWon();
-					setLevelInLocalStorage(state.currentLevel + 1);
-					setCurrentLevel(state.currentLevel + 1);
-				}
-				if (terrain.getGreenCoverPercentage() < state.minLevelCover) {
-					changeIsGameStarted(false);
-					title.setLevelLost("You lost the forest");
-				} else if (lion.getHealth() === 0) {
-					changeIsGameStarted(false);
-					title.setLevelLost("You burned to death");
-				}
+			let map = terrain.getMap();
+			lion.fireDamage(map);
+			if (state.didLionBlow) {
+				terrain.handleLionBlow(lion.blow(map));
+				setLionBlow(false);
 			}
-			title.update();
-		},
-		render: () => { // render the game state
-			if (state.isGameStarted) {
-				terrain.renderTerrain(origin);
-				lion.render();
-				humans.renderHumans(origin);
-				shadow.addShadow(lion.absPosition(), terrain.getFireTiles(), 200, 82.5, origin);
-				miniMap.render(lion.tilePosition(), terrain.getMap(), terrain.getGreenCoverPercentage(), humans.getNumAliveHumans(), lion.getHealth(), lion.getBlowStamina());
+
+			if (state.didLionSlay) {
+				humans.handleLionSlay(lion.absPosition(), 200);
+				setLionSlay(false);
 			}
-			title.render();
+
+			humans.updateTargets(map, lion.tilePosition());
+			let burnPositions = humans.updatePositions();
+			terrain.handleHumanBurn(burnPositions);
+			if (humans.getNumAliveHumans() === 0) {
+				changeIsGameStarted(false);
+				title.setLevelWon();
+				setLevelInLocalStorage(state.currentLevel + 1);
+				setCurrentLevel(state.currentLevel + 1);
+			}
+			if (terrain.getGreenCoverPercentage() < state.minLevelCover) {
+				changeIsGameStarted(false);
+				title.setLevelLost("You lost the forest");
+			} else if (lion.getHealth() === 0) {
+				changeIsGameStarted(false);
+				title.setLevelLost("You burned to death");
+			}
 		}
-	});
+		title.update();
+	};
+	const render = () => { // render the game state
+		if (state.isGameStarted) {
+			terrain.renderTerrain(origin);
+			lion.render();
+			humans.renderHumans(origin);
+			shadow.addShadow(lion.absPosition(), terrain.getFireTiles(), 200, 82.5, origin);
+			miniMap.render(lion.tilePosition(), terrain.getMap(), terrain.getGreenCoverPercentage(), humans.getNumAliveHumans(), lion.getHealth(), lion.getBlowStamina());
+		}
+		title.render();
+	};
 
-	loop.start();    // start the game
+	const loop = () => {
+		update();
+		render();
+
+		window.requestAnimationFrame(loop);
+	};
+
+
+	window.requestAnimationFrame(loop);
 };
 
 Main();

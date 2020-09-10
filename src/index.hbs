@@ -12,7 +12,7 @@
     {{/if}}
   </head>
   <body>
-    <canvas></canvas>
+    <canvas id="main"></canvas>
     <canvas id="shadow" style="position: fixed; top: 0; left: 0"></canvas>
     <canvas id="title" style="position: fixed; top: 0; left: 0"></canvas>
     {{#if js}}
@@ -20,7 +20,6 @@
         {{{ js }}}
       </script>
     {{else}}
-        <script src="public/kontra.js"></script>
         <script src='main.js'></script>
     {{/if}}
   </body>
