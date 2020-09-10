@@ -9,6 +9,7 @@ const source      = require('vinyl-source-stream');
 const rename      = require('gulp-rename');
 const livereload  = require('gulp-livereload');
 const util        = require('gulp-util');
+const minify = require('gulp-minify');
 
 function onError( err, pipeline ) {
   util.log( util.colors.red( `Error: ${ err }` ) );
@@ -44,6 +45,7 @@ module.exports = () => {
     let pipeline;
     return pipeline = gulp.src('./dist/main.js')
       .pipe( uglify() )
+      .pipe(minify())
       .on( 'error', err => onError( err, pipeline ) )
       .pipe( rename('main.min.js') )
       .pipe( gulp.dest('./dist') );
