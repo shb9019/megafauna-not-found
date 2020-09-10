@@ -27,7 +27,8 @@ export const lionParameters = {
 	extinguishRange: 20,
 	extinguishRechargeTime: 5000,
 	initialHealth: 100,
-	fireDamage: 2
+	fireDamage: 2,
+	killRange: 8
 };
 
 export const humanParameters = {

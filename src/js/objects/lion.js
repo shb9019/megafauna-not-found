@@ -18,12 +18,15 @@ export const Lion = (context, setLionBlow, setLionSlay, restartLevel) => {
 		speed,
 		fireDamage,
 		extinguishRange,
-		extinguishRechargeTime
+		extinguishRechargeTime,
+		killRange
 	} = lionParameters;
 	
 	let lastBlowTime = 0;
+	let lastKillTime = 0;
 	let lastStamina = 1;
 	const blowAnimationTime = 250;
+	const killAnimationTime = 100;
 
 	const IdleSpriteSheet = () => SpriteSheet(context, idleSprite, 64, 64, 5, 250);
 	const WalkSpriteSheet = () => SpriteSheet(context, walkSprite, 64, 64, 2, 500);
@@ -76,6 +79,7 @@ export const Lion = (context, setLionBlow, setLionSlay, restartLevel) => {
 			setLionBlow();
 		} else if (e.key === "k") {
 			setLionSlay();
+			lastKillTime = new Date();
 		} else if (e.key === "r") {
 			restartLevel();
 		}
@@ -130,10 +134,11 @@ export const Lion = (context, setLionBlow, setLionSlay, restartLevel) => {
 	};
 
 	const renderKill = () => {
+		let fraction = getTimeSince(lastKillTime) / killAnimationTime;
 		context.strokeStyle = 'red';
 		context.lineWidth = 3;
 		context.beginPath();
-		context.arc(sprite.x, sprite.y, lastStamina * (extinguishRange / 2) * tileSizePx * fraction, 0, Math.PI*2, false);
+		context.arc(sprite.x, sprite.y, killRange * tileSizePx * fraction, 0, Math.PI*2, false);
 		context.stroke();
 	};
 
@@ -150,6 +155,9 @@ export const Lion = (context, setLionBlow, setLionSlay, restartLevel) => {
 		sprite.animation.render(sprite.x, sprite.y, sprite.rotation);
 		if (getTimeSince(lastBlowTime) <= blowAnimationTime) {
 			renderBlow(blowStamina);
+		}
+		if (getTimeSince(lastKillTime) <= killAnimationTime) {
+			renderKill();
 		}
 	}
 
@@ -196,6 +204,10 @@ export const Lion = (context, setLionBlow, setLionSlay, restartLevel) => {
 
 	lionInterface.getBlowStamina = () => {
 		return Math.min(1, (getTimeSince(state.lastExtinguishTime) / extinguishRechargeTime));
+	};
+
+	lionInterface.getKillRange = () => {
+		return killRange * tileSizePx;
 	};
 
 	return lionInterface;

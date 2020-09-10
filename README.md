@@ -21,9 +21,9 @@ Current output zip size: `7099 bytes`
 
 [x] Generalize the implementation of SpriteSheet
 [x] Remove all dependency on Kontra
-[] Add blow animation
-[] Add kill animation
-[] Add animated tiles for land
+[x] Add blow animation
+[x] Add kill animation
+[] Add tiles for land and barren land
 [] Add animations for Humans
 [] Add animations for Lions
 [] Add levels for the game

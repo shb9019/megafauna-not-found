@@ -100,7 +100,7 @@ const Main = () => {
 			}
 
 			if (state.didLionSlay) {
-				humans.handleLionSlay(lion.absPosition(), 200);
+				humans.handleLionSlay(lion.absPosition(), lion.getKillRange());
 				setLionSlay(false);
 			}
 
