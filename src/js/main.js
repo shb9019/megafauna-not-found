@@ -67,6 +67,10 @@ const Main = () => {
 	const resetAll = (level) => {
 		state.gamePaused = false;
 		if (level === -1) return;
+		else if (level === 6) {
+			state.currentLevel = 5;
+			level = 5;
+		}
 		lion = Lion(context, levelConstants[level - 1].lion, () => setLionBlow(true), () => setLionSlay(true), () => setCurrentLevel(state.currentLevel), togglePauseGame);
 		terrain = Terrain(canvas);
 		miniMap = MiniMap(mapSize);
@@ -142,7 +146,7 @@ const Main = () => {
 				title.setLevelLost("You burned to death");
 			}
 		}
-		title.update();
+		title.update(state.currentLevel);
 	};
 	const render = () => { // render the game state
 		if (!state.gamePaused && state.isGameStarted) {

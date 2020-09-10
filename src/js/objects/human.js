@@ -56,12 +56,14 @@ export const Humans = (context, humanConstants) => {
 	const generateProbabilityMap = (map, lionPos) => {
 		const maxDistance = getEndToEndDistance();
 		let totalProbability = [];
+		let greenTiles = 0;
 
 		for (let x = 0; x < mapSize; x++) {
 			let row = [];
 			for (let y = 0; y < mapSize; y++) {
 				const distanceToLion = distance(lionPos, {x, y});
 				row.push(w1 * distanceToLion / maxDistance);
+				if (map[x][y] === 0) greenTiles++;
 			}
 			totalProbability.push(row);
 		}
@@ -99,7 +101,7 @@ export const Humans = (context, humanConstants) => {
 				for (let k = 0; k < visitedIndices.length; k++) {
 					const x = visitedIndices[k].x;
 					const y = visitedIndices[k].y;
-					totalProbability[x][y] += (w2 * visitedIndices.length / (mapSize * mapSize));
+					totalProbability[x][y] += (w2 * visitedIndices.length / greenTiles);
 				}
 			}
 		}
@@ -182,7 +184,9 @@ export const Humans = (context, humanConstants) => {
 			else finalY = human.y - (m * speed * denom);
 			humans[i].x = finalX;
 			humans[i].y = finalY;
-		
+		}
+
+		for (let i = 0; i < humans.length; i++) {
 			if (getTimeSince(lastBurnAt[i]) >= burnInterval[i]) {
 				burnPositions.push({
 					x: Math.floor(humans[i].x / tileSizePx),

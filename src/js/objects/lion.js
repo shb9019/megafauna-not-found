@@ -179,7 +179,6 @@ export const Lion = (context, lionConstants, setLionBlow, setLionSlay, restartLe
 		let position = tilePosition();
 
 		let range = Math.ceil(extinguishRange * blowStamina / 2);
-		console.log(blowStamina);
 
 		for (let i = Math.max(0, position.x - range); i <= Math.min(mapSize - 1, position.x + range); i++) {
 			for (let j = Math.max(0, position.y - range); j <= Math.min(mapSize - 1, position.y + range); j++) {
@@ -189,6 +188,7 @@ export const Lion = (context, lionConstants, setLionBlow, setLionSlay, restartLe
 				}
 			}
 		}
+
 		lastBlowTime = new Date();
 		lastStamina = blowStamina;
 		state.lastExtinguishTime = Date.now();

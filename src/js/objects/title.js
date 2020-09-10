@@ -1,7 +1,7 @@
-import {tileSizePx} from "../constants";
+import { tileSizePx, deppSong } from "../constants";
 
 import { draw, getTextLength, getPositions } from '../classes/font';
-import {getTimeSince} from "../helper";
+import { getTimeSince, randomIntFromInterval } from "../helper";
 
 let fireSprite = new Image();
 fireSprite.src = 'public/assets/fire2.png';
@@ -10,6 +10,20 @@ export const Title = (currentLevel, setLevel, changeGameStarted, pauseGame, resu
 	const titleInterface = {};
 	let clickableRectangles = [];
 
+    const buffer = zzfxM(...deppSong);
+    const sound = zzfxP(...buffer);
+    sound.stop();
+
+    const tips = [
+        "Look out for new fires in the minimap.",
+        "Put out fires as early as possible.",
+        "As levels increase, humans stay away lions.",
+        "Keep roaming the map.",
+        "Prioritize killing humans if the fires are out of control",
+        "Humans become faster as levels progress"
+    ];
+    let tip = tips[0];
+
 	let pageNumber = 0;
 	let gameOverReason = "";
 	const GAME_START = 99;
@@ -17,6 +31,7 @@ export const Title = (currentLevel, setLevel, changeGameStarted, pauseGame, resu
 	const canvas = document.getElementById('title');
 	const context = canvas.getContext('2d');
 	let renderStoryStartTime = 0;
+    let level = currentLevel;
 
 	canvas.width = window.innerWidth;
 	canvas.height = window.innerHeight;
@@ -83,7 +98,7 @@ export const Title = (currentLevel, setLevel, changeGameStarted, pauseGame, resu
 	};
 
     const renderResume = () => {
-        const gameLine = "RESUME LEVEL " + currentLevel;
+        const gameLine = "RESUME LEVEL " + level;
         let fontSize = 8;
         let totalWidth = getTextLength(gameLine, fontSize) + 60;
         let startX = (canvas.width - totalWidth) / 2.0;
@@ -280,7 +295,8 @@ export const Title = (currentLevel, setLevel, changeGameStarted, pauseGame, resu
     };
 
     const renderGameWon = () => {
-        const gameOver = "YOU SAVED THE FOREST!";
+        let gameOver = "YOU SAVED THE FOREST!";
+        if (level === 6) gameOver = "YOU FINISHED THE GAME!";
         let fontSize = 14;
         const textLength = getTextLength(gameOver, fontSize);
         let x = (canvas.width - textLength) / 2;
@@ -350,7 +366,7 @@ export const Title = (currentLevel, setLevel, changeGameStarted, pauseGame, resu
             ]
         );
 
-        text = "RESTART LEVEL";
+        text = "RESTART";
         fontSize = 8;
         textLength = getTextLength(text, fontSize);
         x = (3 * canvas.width / 4) - (textLength / 2);
@@ -363,6 +379,20 @@ export const Title = (currentLevel, setLevel, changeGameStarted, pauseGame, resu
                 () => { pageNumber = GAME_START; changeGameStarted(true);}
             ]
         );
+
+
+        text = "Tip: " + tip;
+        fontSize = 2;
+        x = (canvas.width / 2);
+        y += 150;
+        context.fillStyle = 'white';
+        context.font = '20px Courier New';
+        context.textAlign = 'center';
+        context.fillText(text, x, y);
+    };
+
+    const renderGameFinished = () => {
+
     };
 
     canvas.addEventListener('mousemove', e => {
@@ -404,17 +434,20 @@ export const Title = (currentLevel, setLevel, changeGameStarted, pauseGame, resu
 
     titleInterface.pause = () => {
         if (pageNumber === GAME_START) {
+            tip = tips[randomIntFromInterval(0, tips.length - 1)];
             pageNumber = 5;
         }
     };
 
     titleInterface.resume = () => {
         if (pageNumber === 5) {
-            pageNumber = GAME_START;
+            pageNumber = GAME_START; sound.start(0);
         }
     };
 
-	titleInterface.update = () => {};
+	titleInterface.update = (currentLevel) => {
+        level = currentLevel;
+    };
 
 	titleInterface.render = () => {
 	    if (pageNumber !== GAME_START) {
@@ -424,7 +457,7 @@ export const Title = (currentLevel, setLevel, changeGameStarted, pauseGame, resu
             if (pageNumber === 0) {
                 // Title page
                 renderTitle();
-                if (currentLevel === 1) {
+                if (level === 1) {
                     renderPlay();
                 } else {
                     renderResume();
@@ -448,11 +481,15 @@ export const Title = (currentLevel, setLevel, changeGameStarted, pauseGame, resu
             } else if (pageNumber === 4) {
                 // Level won
                 renderGameWon();
-                renderNextLevel();
+                if (level !== 6) {
+                    renderNextLevel();
+                }
                 renderHome();
             } else if (pageNumber === 5) {
                 renderPauseButtons();
             }
+        } else if (level === 6) { 
+            renderGameFinished();
         } else {
         	context.clearRect(0, 0, canvas.width, canvas.height);
         }
