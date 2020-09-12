@@ -36,16 +36,47 @@ export const MiniMap = (numTiles) => {
 		}
 	}
 
+	let drawLevel = (level) => {
+		context.fillStyle = "yellow";
+		context.font = "15px arial";
+		context.fillText("Level " + level, startX, startY + (2 * numTiles) + 20);
+	};
+
 	let drawGreenCover = (greenCover) => {
 		context.fillStyle = "yellow";
 		context.font = "15px arial";
-		context.fillText("Green Cover left: " + greenCover + "%", startX, startY + (2 * numTiles) + 20);
+		context.fillText("Green Cover left: " + greenCover + "%", startX, startY + (2 * numTiles) + 40);
+	
+		let sX = canvas.width - 30;
+		let sY = canvas.height - 60;
+
+		let gc = greenCover / 100;
+		context.fillStyle = '#3cb043';
+		context.beginPath();
+    	context.moveTo(sX + 10, sY + 0);
+    	context.lineTo(sX + 2, sY + 10);
+    	context.lineTo(sX + 18, sY + 10);
+    	context.fill();
+    	context.beginPath();
+    	context.moveTo(sX + 2, sY + 10);
+    	context.lineTo(sX + 18, sY + 10);
+    	context.lineTo(sX + 10, sY + 20);
+    	context.fill();
+
+    	context.fillStyle = 'white';
+    	context.fillRect(sX - 214, sY, 204, 20);
+    	context.fillStyle = '#3cb043';
+    	context.fillRect(sX - 212, sY + 2, 200 *  gc, 16);
+    	context.fillStyle = '#FF2400';
+    	context.fillRect(sX - 212 + (200 * 0.25) + 2, sY + 2, 2, 16);
+    	context.fillStyle = 'black';
+    	context.fillRect(sX - 212 + (200 * gc), sY + 2, 200 *  (1 - gc), 16);
 	};
 
 	let drawAliveHumans = (numHumansAlive) => {
 		context.fillStyle = "yellow";
 		context.font = "15px arial";
-		context.fillText("Humans alive: " + numHumansAlive, startX, startY + (2 * numTiles) + 40);
+		context.fillText("Humans alive: " + numHumansAlive, startX, startY + (2 * numTiles) + 60);
 	};
 
 	let drawHealthBar = (health) => {
@@ -63,35 +94,36 @@ export const MiniMap = (numTiles) => {
 	};
 
 	let drawStaminaBar = (stamina) => {
-			let startX = canvas.width - 30;
-			let startY = canvas.height - 30;
+		let startX = canvas.width - 30;
+		let startY = canvas.height - 30;
 
-		    // Draw the energy icon
-		    context.fillStyle = '#ffc40c';
-		    context.beginPath();
-    		context.moveTo(startX + 10, startY + 0);
-    		context.lineTo(startX + 0, startY + 10);
-    		context.lineTo(startX + 10, startY + 10);
-    		context.fill();
-    		context.beginPath();
-    		context.moveTo(startX + 6, startY + 10);
-    		context.lineTo(startX + 16, startY + 10);
-    		context.lineTo(startX + 6, startY + 20);
-    		context.fill();
+		// Draw the energy icon
+		context.fillStyle = '#ffc40c';
+		context.beginPath();
+    	context.moveTo(startX + 10, startY + 0);
+    	context.lineTo(startX + 0, startY + 10);
+    	context.lineTo(startX + 10, startY + 10);
+    	context.fill();
+    	context.beginPath();
+    	context.moveTo(startX + 6, startY + 10);
+    	context.lineTo(startX + 16, startY + 10);
+    	context.lineTo(startX + 6, startY + 20);
+    	context.fill();
 
-    		context.fillStyle = 'white';
-    		context.fillRect(startX - 214, startY, 204, 20);
-    		context.fillStyle = '#ffc40c';
-    		context.fillRect(startX - 212, startY + 2, 200 *  stamina, 16);
-    		context.fillStyle = 'black';
-    		context.fillRect(startX - 212 + (200 * stamina), startY + 2, 200 *  (1 - stamina), 16);
+    	context.fillStyle = 'white';
+    	context.fillRect(startX - 214, startY, 204, 20);
+    	context.fillStyle = '#ffc40c';
+    	context.fillRect(startX - 212, startY + 2, 200 *  stamina, 16);
+    	context.fillStyle = 'black';
+    	context.fillRect(startX - 212 + (200 * stamina), startY + 2, 200 *  (1 - stamina), 16);
 	};
 
-	miniMapInterface.render = (lionPosition, map, greenCover, numHumansAlive, health, stamina) => {
+	miniMapInterface.render = (level, lionPosition, map, greenCover, numHumansAlive, health, stamina) => {
 		context.globalCompositeOperation = 'source-over';
 		drawBoundingBox();
 		drawFireBlips(map);
 		drawLionBlip(lionPosition);
+		drawLevel(level);
 		drawGreenCover(greenCover);
 		drawAliveHumans(numHumansAlive);
 		drawHealthBar(health);

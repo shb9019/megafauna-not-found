@@ -8,7 +8,7 @@ humanSprite.src = 'public/assets/human.png';
 
 
 export const Humans = (context, humanConstants) => {
-	const {w1, w2, targetUpdateInterval, speed, minBurnInterval, maxBurnInterval, numHumans} = humanConstants;
+	const {w1, w2, w3, targetUpdateInterval, speed, minBurnInterval, maxBurnInterval, numHumans} = humanConstants;
 
 	let humans = [];
 
@@ -18,9 +18,7 @@ export const Humans = (context, humanConstants) => {
 	let allProbabilities = [];
 
 	// Interval from lastBurnAt to next burn
-	let burnInterval = [];
-	let lastBurnAt = [];
-	let lastTargetUpdateAt = Date.now();
+	let burnInterval = [], lastBurnAt = [], lastTargetUpdateAt = Date.now();
 
 	const getEndToEndDistance = () => {
 		return Math.sqrt(2.0 * mapSize * mapSize);
@@ -28,7 +26,7 @@ export const Humans = (context, humanConstants) => {
 
 	const humansInterface = {};
 	humansInterface.initializeHumans = (map, lionPos) => {
-		generateProbabilityMap(map, lionPos);
+		generateProbabilityMap(map, lionPos, true);
 
 		for (let i = 0; i < numHumans; i++) {
 			let position = sortedProbabilities[getRandomIndex(mapSize * mapSize)];
@@ -38,9 +36,7 @@ export const Humans = (context, humanConstants) => {
 				y: positionPx.y,
 				sprite: SpriteSheet(context, humanSprite, 16, 16, 12, 80),
 				targetX: positionPx.x,
-				targetY: positionPx.y,
-				targetProbability: position.probability,
-				dead: false
+				targetY: positionPx.y
 			});
 			lastBurnAt.push(Date.now());
 			burnInterval.push(randomIntFromInterval(minBurnInterval, maxBurnInterval));
@@ -59,7 +55,24 @@ export const Humans = (context, humanConstants) => {
 		}
 	};
 
-	const generateProbabilityMap = (map, lionPos) => {
+	const getHumanProximity = (tileX, tileY, initial = false) => {
+		let x = tileSizePx * tileX;
+		let y = tileSizePx * tileY;
+		let sum = 0;
+		if (initial) {
+			for (let i = 0; i < numHumans; i++) {
+				sum += (distance({x: (mapSize * tileSizePx), y: (mapSize * tileSizePx)}, {x, y}) / tileSizePx);
+			}
+			return (sum / (numHumans * Math.sqrt(2) * mapSize));
+		} else {
+			for (let i = 0; i < humans.length; i++) {
+				sum += (distance({x: humans[i].targetX, y: humans[i].targetY}, {x, y}) / tileSizePx);
+			}
+			return (sum / (humans.length * Math.sqrt(2) * mapSize));
+		}
+	};
+
+	const generateProbabilityMap = (map, lionPos, initial = false) => {
 		const maxDistance = getEndToEndDistance();
 		let totalProbability = [];
 		let greenTiles = 0;
@@ -107,7 +120,7 @@ export const Humans = (context, humanConstants) => {
 				for (let k = 0; k < visitedIndices.length; k++) {
 					const x = visitedIndices[k].x;
 					const y = visitedIndices[k].y;
-					totalProbability[x][y] += (w2 * visitedIndices.length / greenTiles);
+					totalProbability[x][y] += ((w2 * visitedIndices.length / greenTiles) + (w3 * getHumanProximity(x, y, initial)));
 				}
 			}
 		}
@@ -143,11 +156,8 @@ export const Humans = (context, humanConstants) => {
 			nextPos = sortedProbabilities[getRandomIndex(mapSize * mapSize)];
 			if (nextPos.x == currPos.x) continue;
 			let a = ((nextPos.y - currPos.y) / (nextPos.x - currPos.x));
-			let b = -1;
-			let c = - (b * currPos.y) - (a * currPos.x);
-			let x = lionPos.x;
-			let y = lionPos.y;
-			let dist = Math.abs(a * x + b * y + c) / Math.sqrt(a * a + b * b);
+			let c = - (-1 * currPos.y) - (a * currPos.x);
+			let dist = Math.abs(a * lionPos.x - lionPos.y + c) / Math.sqrt(a * a + 1);
 			if (dist >= (tileSizePx * 10)) break;
 		}
 
@@ -172,13 +182,8 @@ export const Humans = (context, humanConstants) => {
 			let val = mapSize * Math.floor(humans[i].targetX / tileSizePx) + Math.floor(humans[i].targetY / tileSizePx);
 			let currentTarget = allProbabilities[val];
 			let p2 = currentTarget.probability;
-			if (Math.abs(p1 - p2) >= 0) {
-				humans[i].targetX = (selectedTarget.x * 25 + 5);
-				humans[i].targetY = (selectedTarget.y * 25 + 5);
-				humans[i].targetProbability = p1;
-			} else {
-				humans[i].targetProbability = p2;
-			}
+			humans[i].targetX = (selectedTarget.x * 25 + 5);
+			humans[i].targetY = (selectedTarget.y * 25 + 5);
 		}
 	}
 

@@ -5,7 +5,7 @@ import { Humans } from './objects/human';
 import { MiniMap } from './objects/minimap';
 import { Shadow } from './objects/shadow';
 import { Title } from './objects/title';
-import { mapSize, tileSizePx, initialCameraPos, levelConstants, deppSong } from './constants';
+import { mapSize, tileSizePx, initialCameraPos, levelConstants, deppSong, numLevels } from './constants';
 
 const canvas = document.getElementById('main');
 const context = canvas.getContext('2d');
@@ -37,10 +37,10 @@ const Main = () => {
 	};
 
 	const getLocalStorage = () => {
-		let lsDetails = window.localStorage.getItem("megafaunanotfound");
+		let lsDetails = window.localStorage.getItem("mfnf");
 		if (lsDetails === null) {
-			window.localStorage.setItem("megafaunanotfound", JSON.stringify({level: 1}));
-			lsDetails = window.localStorage.getItem("megafaunanotfound");
+			window.localStorage.setItem("mfnf", JSON.stringify({level: 1}));
+			lsDetails = window.localStorage.getItem("mfnf");
 		}
 		return JSON.parse(lsDetails);
 	};
@@ -54,7 +54,7 @@ const Main = () => {
 		const lsDetails = getLocalStorage();
 		if (level > lsDetails.level) {
 			lsDetails.level = level;
-			window.localStorage.setItem("megafaunanotfound", JSON.stringify(lsDetails));
+			window.localStorage.setItem("mfnf", JSON.stringify(lsDetails));
 		}
 	}
 
@@ -83,9 +83,9 @@ const Main = () => {
 	const resetAll = (level) => {
 		state.gamePaused = false;
 		if (level === -1) return;
-		else if (level === 6) {
-			state.currentLevel = 5;
-			level = 5;
+		else if (level === (numLevels + 1)) {
+			state.currentLevel = numLevels;
+			level = numLevels;
 		}
 		lion = Lion(context, levelConstants[level - 1].lion, () => setLionBlow(true), () => setLionSlay(true), () => setCurrentLevel(state.currentLevel), togglePauseGame);
 		terrain = Terrain(canvas);
@@ -106,6 +106,7 @@ const Main = () => {
 
 	const setCurrentLevel = (value) => {
 		state.currentLevel = value;
+		state.currentLevel %= (numLevels + 1);
 	};
 
 	const pauseGame = () => {
@@ -133,8 +134,9 @@ const Main = () => {
 	};
 
 	const update = () => { // update the game state
+		let mppx = mapSize * tileSizePx;
 		if (!state.gamePaused && state.isGameStarted === true) {
-			updateOrigin(lion.absPosition(), mapSize * tileSizePx, mapSize * tileSizePx, origin);
+			updateOrigin(lion.absPosition(), mppx, mppx, origin);
 			lion.update(origin);
 			terrain.updateTerrain();
 
@@ -175,8 +177,8 @@ const Main = () => {
 			terrain.renderTerrain(origin);
 			lion.render(state.stamina);
 			humans.renderHumans(origin);
-			shadow.addShadow(lion.absPosition(), terrain.getFireTiles(), 200, 82.5, origin);
-			miniMap.render(lion.tilePosition(), terrain.getMap(), terrain.getGreenCoverPercentage(), humans.getNumAliveHumans(), lion.getHealth(), lion.getBlowStamina());
+			shadow.addShadow(lion.absPosition(), terrain.getFireTiles(), 200, 50, origin);
+			miniMap.render(state.currentLevel, lion.tilePosition(), terrain.getMap(), terrain.getGreenCoverPercentage(), humans.getNumAliveHumans(), lion.getHealth(), lion.getBlowStamina());
 		}
 		title.render();
 	};

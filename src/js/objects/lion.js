@@ -80,10 +80,10 @@ export const Lion = (context, lionConstants, setLionBlow, setLionSlay, restartLe
 
 		if (e.key === " ") {
 			setLionBlow();
-		} else if (e.key === "k") {
+		} else if (e.key === "k" || e.key === "K") {
 			setLionSlay();
 			lastKillTime = new Date();
-		} else if (e.key === "r") {
+		} else if (e.key === "r" || e.key === "R") {
 			restartLevel();
 		} else if (e.key === "Escape") {
 			togglePauseGame();

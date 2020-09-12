@@ -1,4 +1,4 @@
-import { tileSizePx, deppSong } from "../constants";
+import { tileSizePx, deppSong, numLevels } from "../constants";
 
 import { draw, getTextLength, getPositions } from '../classes/font';
 import { getTimeSince, randomIntFromInterval } from "../helper";
@@ -94,7 +94,7 @@ export const Title = (currentLevel, setLevel, changeGameStarted, pauseGame, resu
 	};
 
     const renderResume = () => {
-        const gameLine = "RESUME LEVEL " + level;
+        const gameLine = "RESUME LEVEL " + (level % (numLevels + 1));
         let fontSize = 8;
         let totalWidth = getTextLength(gameLine, fontSize) + 60;
         let startX = (canvas.width - totalWidth) / 2.0;
@@ -292,7 +292,7 @@ export const Title = (currentLevel, setLevel, changeGameStarted, pauseGame, resu
 
     const renderGameWon = () => {
         let gameOver = "YOU SAVED THE FOREST!";
-        if (level === 6) gameOver = "YOU FINISHED THE GAME!";
+        if (level === (numLevels + 1)) gameOver = "YOU FINISHED THE GAME!";
         let fontSize = 14;
         const textLength = getTextLength(gameOver, fontSize);
         let x = (canvas.width - textLength) / 2;
@@ -477,7 +477,7 @@ export const Title = (currentLevel, setLevel, changeGameStarted, pauseGame, resu
             } else if (pageNumber === 4) {
                 // Level won
                 renderGameWon();
-                if (level !== 6) {
+                if (level !== (numLevels + 1)) {
                     renderNextLevel();
                 }
                 renderHome();

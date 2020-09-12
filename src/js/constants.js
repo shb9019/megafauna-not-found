@@ -28,12 +28,13 @@ export const lionParameters = {
 	extinguishRechargeTime: 5000,
 	initialHealth: 100,
 	fireDamage: 2,
-	killRange: 8
+	killRange: 5
 };
 
 export const humanParameters = {
 	w1: 0.7,
 	w2: 0.3,
+	w3: 0.25,
 	targetUpdateInterval: 1000,
 	speed: 1,
 	minBurnInterval: 5000,
@@ -56,7 +57,7 @@ export const keys = {
 	" ": "space"
 };
 
-export const numLevels = 5;
+export const numLevels = 6;
 
 export const levelConstants = [{
 	lion: {
@@ -65,10 +66,11 @@ export const levelConstants = [{
 		speed: 10.0
 	},
 	human: {
-		w1: 0.001,
-		w2: 0.999,
-		speed: 4.0,
-		targetUpdateInterval: 5000,
+		w1: 0.2,
+		w2: 0.7,
+		w3: 0.1,
+		speed: 8.0,
+		targetUpdateInterval: 2000,
 		minBurnInterval: 3000,
 		maxBurnInterval: 8000,
 		numHumans: 10
@@ -81,8 +83,9 @@ export const levelConstants = [{
 	},
 	human: {
 		w1: 0.1,
-		w2: 0.9,
-		speed: 8.0,
+		w2: 0.85,
+		w3: 0.05,
+		speed: 10.0,
 		targetUpdateInterval: 3000,
 		minBurnInterval: 1000,
 		maxBurnInterval: 3000,
@@ -95,12 +98,13 @@ export const levelConstants = [{
 		speed: 10.0
 	},
 	human: {
-		w1: 0.8,
+		w1: 0.7,
 		w2: 0.2,
-		speed: 12.0,
+		w3: 0.1,
+		speed: 15.0,
 		targetUpdateInterval: 1000,
-		minBurnInterval: 5000,
-		maxBurnInterval: 10000,
+		minBurnInterval: 2000,
+		maxBurnInterval: 5000,
 		numHumans: 8
 	}
 }, {
@@ -111,12 +115,13 @@ export const levelConstants = [{
 	},
 	human: {
 		w1: 0.5,
-		w2: 0.5,
-		speed: 14.0,
+		w2: 0.3,
+		w3: 0.2,
+		speed: 18.0,
 		targetUpdateInterval: 1000,
 		minBurnInterval: 1000,
 		maxBurnInterval: 8000,
-		numHumans: 1
+		numHumans: 12
 	}
 }, {
 	lion: {
@@ -125,13 +130,30 @@ export const levelConstants = [{
 		speed: 10.0
 	},
 	human: {
-		w1: 0.2,
-		w2: 0.8,
-		speed: 15.0,
-		targetUpdateInterval: 1000,
+		w1: 1.0,
+		w2: 0.001,
+		w3: 0.001,
+		speed: 20.0,
+		targetUpdateInterval: 500,
 		minBurnInterval: 1000,
 		maxBurnInterval: 5000,
-		numHumans: 15
+		numHumans: 3
+	}
+}, {
+	lion: {
+		extinguishRechargeTime: 3000,
+		fireDamage: 10,
+		speed: 10.0
+	},
+	human: {
+		w1: 0.998,
+		w2: 0.001,
+		w3: 0.001,
+		speed: 23.0,
+		targetUpdateInterval: 500,
+		minBurnInterval: 1000,
+		maxBurnInterval: 5000,
+		numHumans: 18
 	}
 }];
 
