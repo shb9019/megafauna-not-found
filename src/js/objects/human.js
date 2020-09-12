@@ -1,8 +1,14 @@
 import { Queue } from '../classes/queue';
 import { getMidPointPx, copy, getTimeSince, create2DArray, distance, getRandomIndex, randomIntFromInterval } from '../helper';
 import { mapSize, directions, humanParameters, tileSizePx } from '../constants';
+import { SpriteSheet } from './spriteSheet';
+
+const humanSprite = new Image();
+humanSprite.src = 'public/assets/human.png';
+
 
 export const Humans = (context, humanConstants) => {
+	console.log(humanConstants);
 	const {w1, w2, targetUpdateInterval, speed, minBurnInterval, maxBurnInterval, numHumans} = humanConstants;
 
 	let humans = [];
@@ -31,6 +37,7 @@ export const Humans = (context, humanConstants) => {
 			humans.push({
 				x: positionPx.x,
 				y: positionPx.y,
+				sprite: SpriteSheet(context, humanSprite, 16, 16, 12, 80),
 				targetX: positionPx.x,
 				targetY: positionPx.y,
 				targetProbability: position.probability,
@@ -132,8 +139,8 @@ export const Humans = (context, humanConstants) => {
 
 	humansInterface.renderHumans = (origin) => {
 		for (let i = 0; i < humans.length; i++) {
-			context.fillStyle = 'black';
-			context.fillRect(humans[i].x + origin.x, humans[i].y + origin.y, 15, 15);
+			let angle = Math.atan2(humans[i].x - humans[i].targetX, humans[i].y - humans[i].targetY);
+			humans[i].sprite.render(humans[i].x + origin.x, humans[i].y + origin.y, -angle, 32, 32, true);
 		}
 	};
 
@@ -187,6 +194,7 @@ export const Humans = (context, humanConstants) => {
 		}
 
 		for (let i = 0; i < humans.length; i++) {
+			humans[i].sprite.update();
 			if (getTimeSince(lastBurnAt[i]) >= burnInterval[i]) {
 				burnPositions.push({
 					x: Math.floor(humans[i].x / tileSizePx),

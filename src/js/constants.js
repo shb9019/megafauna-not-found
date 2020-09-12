@@ -65,13 +65,13 @@ export const levelConstants = [{
 		speed: 10.0
 	},
 	human: {
-		w1: 0.1,
-		w2: 0.9,
-		speed: 8.0,
+		w1: 0.01,
+		w2: 0.99,
+		speed: 1.0,
 		targetUpdateInterval: 3000,
 		minBurnInterval: 3000,
 		maxBurnInterval: 8000,
-		numHumans: 3
+		numHumans: 10
 	}
 }, {
 	lion: {
