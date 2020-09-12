@@ -137,7 +137,7 @@ const lionParameters = {
 	extinguishRechargeTime: 5000,
 	initialHealth: 100,
 	fireDamage: 2,
-	killRange: 8
+	killRange: 5
 };
 
 const keys = {
@@ -311,11 +311,17 @@ const Terrain = (canvas) => {
 
 				if (map[i][j] == 0) {
 					context.drawImage(grassTile, adjPos.x, adjPos.y, tileSizePx, tileSizePx);
+					context.lineWidth = 0.4;
+					context.strokeStyle = 'black';
+					context.strokeRect(adjPos.x, adjPos.y, tileSizePx, tileSizePx);
 				} else if (map[i][j] == 1) {
 					let frame = Math.floor(getTimeSince(0) / 50) % 45;
 					context.drawImage(fireTile, frame * 16, 0, 16, 16, adjPos.x, adjPos.y, tileSizePx, tileSizePx);
 				} else if (map[i][j] == 2) {
 					context.drawImage(burntTile, adjPos.x, adjPos.y, tileSizePx, tileSizePx);
+					context.lineWidth = 0.4;
+					context.strokeStyle = 'black';
+					context.strokeRect(adjPos.x, adjPos.y, tileSizePx, tileSizePx);
 				}
 			}
 		}
@@ -1611,7 +1617,7 @@ const Title = (currentLevel, setLevel, changeGameStarted, pauseGame, resumeGame)
 			"Esc   - Pause",
 			"",
             "",
-			"Goal: Kill all humans before 75% of the forest is burnt."
+			"Goal: Find and kill all humans in the dark before 75% of the forest is burnt."
         ];
         context.font = '25px Courier New';
         y = 230;
@@ -1753,11 +1759,19 @@ const Title = (currentLevel, setLevel, changeGameStarted, pauseGame, resumeGame)
             ]
         );
 
+        text = "WASD - Move, K - Kill, Space - Extinguish, Esc - Pause/Resume"
+        fontSize = 2;
+        x = (canvas.width / 2);
+        y += 150;
+        context.fillStyle = 'white';
+        context.font = '20px Courier New';
+        context.textAlign = 'center';
+        context.fillText(text, x, y);
 
         text = "Tip: " + tip;
         fontSize = 2;
         x = (canvas.width / 2);
-        y += 150;
+        y += 30;
         context.fillStyle = 'white';
         context.font = '20px Courier New';
         context.textAlign = 'center';

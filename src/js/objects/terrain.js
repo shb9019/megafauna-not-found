@@ -54,11 +54,17 @@ export const Terrain = (canvas) => {
 
 				if (map[i][j] == 0) {
 					context.drawImage(grassTile, adjPos.x, adjPos.y, tileSizePx, tileSizePx);
+					context.lineWidth = 0.4;
+					context.strokeStyle = 'black';
+					context.strokeRect(adjPos.x, adjPos.y, tileSizePx, tileSizePx);
 				} else if (map[i][j] == 1) {
 					let frame = Math.floor(getTimeSince(0) / 50) % 45;
 					context.drawImage(fireTile, frame * 16, 0, 16, 16, adjPos.x, adjPos.y, tileSizePx, tileSizePx);
 				} else if (map[i][j] == 2) {
 					context.drawImage(burntTile, adjPos.x, adjPos.y, tileSizePx, tileSizePx);
+					context.lineWidth = 0.4;
+					context.strokeStyle = 'black';
+					context.strokeRect(adjPos.x, adjPos.y, tileSizePx, tileSizePx);
 				}
 			}
 		}

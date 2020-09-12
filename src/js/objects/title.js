@@ -234,7 +234,7 @@ export const Title = (currentLevel, setLevel, changeGameStarted, pauseGame, resu
 			"Esc   - Pause",
 			"",
             "",
-			"Goal: Kill all humans before 75% of the forest is burnt."
+			"Goal: Find and kill all humans in the dark before 75% of the forest is burnt."
         ];
         context.font = '25px Courier New';
         y = 230;
@@ -376,11 +376,19 @@ export const Title = (currentLevel, setLevel, changeGameStarted, pauseGame, resu
             ]
         );
 
+        text = "WASD - Move, K - Kill, Space - Extinguish, Esc - Pause/Resume"
+        fontSize = 2;
+        x = (canvas.width / 2);
+        y += 150;
+        context.fillStyle = 'white';
+        context.font = '20px Courier New';
+        context.textAlign = 'center';
+        context.fillText(text, x, y);
 
         text = "Tip: " + tip;
         fontSize = 2;
         x = (canvas.width / 2);
-        y += 150;
+        y += 30;
         context.fillStyle = 'white';
         context.font = '20px Courier New';
         context.textAlign = 'center';
