@@ -94,7 +94,7 @@ export const Title = (currentLevel, setLevel, changeGameStarted, pauseGame, resu
 	};
 
     const renderResume = () => {
-        const gameLine = "RESUME LEVEL " + (level % (numLevels + 1));
+        const gameLine = "RESUME LEVEL " + Math.min(level, numLevels);
         let fontSize = 8;
         let totalWidth = getTextLength(gameLine, fontSize) + 60;
         let startX = (canvas.width - totalWidth) / 2.0;
@@ -492,7 +492,7 @@ export const Title = (currentLevel, setLevel, changeGameStarted, pauseGame, resu
             } else if (pageNumber === 5) {
                 renderPauseButtons();
             }
-        } else if (level === 6) { 
+        } else if (level === 7) {
             renderGameFinished();
         } else {
         	context.clearRect(0, 0, canvas.width, canvas.height);

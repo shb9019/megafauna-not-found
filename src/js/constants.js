@@ -137,7 +137,7 @@ export const levelConstants = [{
 		targetUpdateInterval: 500,
 		minBurnInterval: 1000,
 		maxBurnInterval: 5000,
-		numHumans: 3
+		numHumans: 15
 	}
 }, {
 	lion: {

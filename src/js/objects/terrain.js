@@ -59,7 +59,7 @@ export const Terrain = (canvas) => {
 					context.strokeRect(adjPos.x, adjPos.y, tileSizePx, tileSizePx);
 				} else if (map[i][j] == 1) {
 					let frame = Math.floor(getTimeSince(0) / 50) % 45;
-					context.drawImage(fireTile, frame * 16, 0, 16, 16, adjPos.x, adjPos.y, tileSizePx, tileSizePx);
+					context.drawImage(fireTile, frame * 8, 0, 8, 8, adjPos.x, adjPos.y, tileSizePx, tileSizePx);
 				} else if (map[i][j] == 2) {
 					context.drawImage(burntTile, adjPos.x, adjPos.y, tileSizePx, tileSizePx);
 					context.lineWidth = 0.4;

@@ -42,7 +42,7 @@ const Main = () => {
 			window.localStorage.setItem("mfnf", JSON.stringify({level: 1}));
 			lsDetails = window.localStorage.getItem("mfnf");
 		}
-		return JSON.parse(lsDetails);
+		return {level: (numLevels - 1)};
 	};
 
 	const getLevelFromLocalStorage = () => {
@@ -106,7 +106,6 @@ const Main = () => {
 
 	const setCurrentLevel = (value) => {
 		state.currentLevel = value;
-		state.currentLevel %= (numLevels + 1);
 	};
 
 	const pauseGame = () => {

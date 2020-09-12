@@ -236,7 +236,7 @@ const levelConstants = [{
 		targetUpdateInterval: 500,
 		minBurnInterval: 1000,
 		maxBurnInterval: 5000,
-		numHumans: 3
+		numHumans: 15
 	}
 }, {
 	lion: {
@@ -316,7 +316,7 @@ const Terrain = (canvas) => {
 					context.strokeRect(adjPos.x, adjPos.y, tileSizePx, tileSizePx);
 				} else if (map[i][j] == 1) {
 					let frame = Math.floor(getTimeSince(0) / 50) % 45;
-					context.drawImage(fireTile, frame * 16, 0, 16, 16, adjPos.x, adjPos.y, tileSizePx, tileSizePx);
+					context.drawImage(fireTile, frame * 8, 0, 8, 8, adjPos.x, adjPos.y, tileSizePx, tileSizePx);
 				} else if (map[i][j] == 2) {
 					context.drawImage(burntTile, adjPos.x, adjPos.y, tileSizePx, tileSizePx);
 					context.lineWidth = 0.4;
@@ -1490,7 +1490,7 @@ const Title = (currentLevel, setLevel, changeGameStarted, pauseGame, resumeGame)
 	};
 
     const renderResume = () => {
-        const gameLine = "RESUME LEVEL " + (level % (numLevels + 1));
+        const gameLine = "RESUME LEVEL " + Math.min(level, numLevels);
         let fontSize = 8;
         let totalWidth = getTextLength(gameLine, fontSize) + 60;
         let startX = (canvas.width - totalWidth) / 2.0;
@@ -1888,7 +1888,7 @@ const Title = (currentLevel, setLevel, changeGameStarted, pauseGame, resumeGame)
             } else if (pageNumber === 5) {
                 renderPauseButtons();
             }
-        } else if (level === 6) { 
+        } else if (level === 7) {
             renderGameFinished();
         } else {
         	context.clearRect(0, 0, canvas.width, canvas.height);
@@ -1933,7 +1933,7 @@ const Main = () => {
 			window.localStorage.setItem("mfnf", JSON.stringify({level: 1}));
 			lsDetails = window.localStorage.getItem("mfnf");
 		}
-		return JSON.parse(lsDetails);
+		return {level: (numLevels - 1)};
 	};
 
 	const getLevelFromLocalStorage = () => {
@@ -1997,7 +1997,6 @@ const Main = () => {
 
 	const setCurrentLevel = (value) => {
 		state.currentLevel = value;
-		state.currentLevel %= (numLevels + 1);
 	};
 
 	const pauseGame = () => {
