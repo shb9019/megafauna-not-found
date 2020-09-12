@@ -42,7 +42,7 @@ const Main = () => {
 			window.localStorage.setItem("mfnf", JSON.stringify({level: 1}));
 			lsDetails = window.localStorage.getItem("mfnf");
 		}
-		return {level: (numLevels - 1)};
+		return JSON.parse(lsDetails);
 	};
 
 	const getLevelFromLocalStorage = () => {

@@ -126,7 +126,7 @@ export const levelConstants = [{
 }, {
 	lion: {
 		extinguishRechargeTime: 3000,
-		fireDamage: 10,
+		fireDamage: 15,
 		speed: 10.0
 	},
 	human: {
@@ -142,7 +142,7 @@ export const levelConstants = [{
 }, {
 	lion: {
 		extinguishRechargeTime: 3000,
-		fireDamage: 10,
+		fireDamage: 20,
 		speed: 10.0
 	},
 	human: {

@@ -6,33 +6,7 @@ Built using [js13k-rollup](https://github.com/spmurrayzzz/js13k-rollup/) templat
 
 *Requires: Node.js >= 4 and < 12*
 
-The purpose of this project is to make getting started with the [js13kgames.com](http://js13kgames.com) competition both easy
-and clean. Using `gulp` and `rollup`, this repo offers the following features:
-
-- Support for [ES2015 modules](http://exploringjs.com/es6/ch_modules.html)
-- JavaScript minification via Uglify
-- Sourcemaps and livereload support for development
-- Inlining for all CSS and JavaScript assets (single `index.min.html` output)
-- Zip packaging of the inlined output for final competition submission
-
-Current output zip size: `7099 bytes`
-
-## TODO
-
-[x] Generalize the implementation of SpriteSheet
-[x] Remove all dependency on Kontra
-[x] Add blow animation
-[x] Add kill animation
-[x] Add tiles for land and barren land
-[] Add animations for Humans
-[] Add animations for Lions
-[] Add levels for the game
-[x] Include assets into zip file
-[] Add music
-[] Show levels list (Optional)
-
-
-Idea: context.arc with increasing radius without beginPath
+Current output zip size: `13087 bytes`
 
 ## Getting started
 
@@ -81,47 +55,3 @@ Template step
 Zip step
 
 5. The `index.min.html` is compressed into a single `game.zip` that can be used for competition submission.
-
-## Features
-
-I've included some components that I use in almost all of my web applications (including games). Since rollup utilizes 'tree-shaking', these components won't be included in the final builds if you never import them yourself.
-
-- `Emitter`
-
-This class is a common abstraction used to implement the pub/sub pattern (on/off/emit).
-
-```js
-import Emitter from './classes/emitter.js';
-
-var emitter = new Emitter();
-
-// Bind event handler to a given event
-emitter.on( 'boom', function() { console.log('it went boom!') } );
-
-// Emit that event
-emitter.emit('boom'); // 'it went boom!'
-
-```
-
-- `BaseClass`
-
-This class gives a simple interface for using the classical inheritance patterns in JavaScript. `BaseClass` subclasses the `Emitter` and will automatically call an `init()` method during construction if it exists on the prototype.
-
-```js
-import BaseClass from './classes/base.js';
-
-var Dude = BaseClass.extend({
-
-  init: function() {
-    console.log('im alive!');
-  }
-
-});
-
-var dude = new Dude(); //'im alive!'
-
-// BaseClass instances inherit from EventEmitter
-dude.on( 'death', function() { console.log('im dead!') });
-dude.emit('death'); // 'im dead!'
-
-```

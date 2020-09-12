@@ -225,7 +225,7 @@ const levelConstants = [{
 }, {
 	lion: {
 		extinguishRechargeTime: 3000,
-		fireDamage: 10,
+		fireDamage: 15,
 		speed: 10.0
 	},
 	human: {
@@ -241,7 +241,7 @@ const levelConstants = [{
 }, {
 	lion: {
 		extinguishRechargeTime: 3000,
-		fireDamage: 10,
+		fireDamage: 20,
 		speed: 10.0
 	},
 	human: {
@@ -1933,7 +1933,7 @@ const Main = () => {
 			window.localStorage.setItem("mfnf", JSON.stringify({level: 1}));
 			lsDetails = window.localStorage.getItem("mfnf");
 		}
-		return {level: (numLevels - 1)};
+		return JSON.parse(lsDetails);
 	};
 
 	const getLevelFromLocalStorage = () => {
