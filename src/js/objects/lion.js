@@ -9,7 +9,7 @@ const walkSprite = new Image();
 walkSprite.src = 'public/assets/walk.png';
 
 // Object to handle the user Lion
-export const Lion = (context, lionConstants, setLionBlow, setLionSlay, restartLevel, togglePauseGame) => {
+export const Lion = (context, lionConstants, setLionBlow, setLionSlay, restartLevel, togglePauseGame, pauseAudio) => {
 	// Initializing all constants used.
 	const lionInterface = {};
 
@@ -28,6 +28,7 @@ export const Lion = (context, lionConstants, setLionBlow, setLionSlay, restartLe
 	let lastBlowTime = 0;
 	let lastKillTime = 0;
 	let lastStamina = 1;
+	let isMoving = false;
 	const blowAnimationTime = 250;
 	const killAnimationTime = 100;
 
@@ -83,10 +84,10 @@ export const Lion = (context, lionConstants, setLionBlow, setLionSlay, restartLe
 		} else if (e.key === "k" || e.key === "K") {
 			setLionSlay();
 			lastKillTime = new Date();
-		} else if (e.key === "r" || e.key === "R") {
-			restartLevel();
 		} else if (e.key === "Escape") {
 			togglePauseGame();
+		} else if (e.key.toUpperCase() === "M") {
+			pauseAudio();
 		}
 	};
 
@@ -126,6 +127,18 @@ export const Lion = (context, lionConstants, setLionBlow, setLionSlay, restartLe
 			sprite.rotation = -Math.PI;
 		} else if (isKeyPressed("down")) {
 			sprite.rotation = Math.PI / 2;
+		}
+
+		if (isKeyPressed("up") || isKeyPressed("down") || isKeyPressed("left") || isKeyPressed("right")) {
+			if (isMoving === false) {
+				isMoving = true;
+				sprite.animation = WalkSpriteSheet();
+			}
+		} else {
+			if (isMoving === true) {
+				isMoving = false;
+				sprite.animation = IdleSpriteSheet();
+			}
 		}
 	};
 

@@ -34,8 +34,8 @@ export const Title = (currentLevel, setLevel, changeGameStarted, pauseGame, resu
 
 	const FireSpriteSheet = () => {
 		const image = fireSprite;
-		const frameWidth = 16;
-		const frameHeight = 16;
+		const frameWidth = 8;
+		const frameHeight = 8;
 		const totalFrameCount = 45;
 		const frameRate = 20;
 		let currentFrame = 0;
@@ -232,8 +232,8 @@ export const Title = (currentLevel, setLevel, changeGameStarted, pauseGame, resu
             "K     - Kill humans in range",
             "Space - Extinguish Fire",
 			"Esc   - Pause",
+            "M     - Mute",
 			"",
-            "",
 			"Goal: Find and kill all humans in the dark before 75% of the forest is burnt."
         ];
         context.font = '25px Courier New';

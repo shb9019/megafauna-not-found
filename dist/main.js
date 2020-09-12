@@ -418,7 +418,7 @@ const walkSprite = new Image();
 walkSprite.src = 'public/assets/walk.png';
 
 // Object to handle the user Lion
-const Lion = (context, lionConstants, setLionBlow, setLionSlay, restartLevel, togglePauseGame) => {
+const Lion = (context, lionConstants, setLionBlow, setLionSlay, restartLevel, togglePauseGame, pauseAudio) => {
 	// Initializing all constants used.
 	const lionInterface = {};
 
@@ -437,6 +437,7 @@ const Lion = (context, lionConstants, setLionBlow, setLionSlay, restartLevel, to
 	let lastBlowTime = 0;
 	let lastKillTime = 0;
 	let lastStamina = 1;
+	let isMoving = false;
 	const blowAnimationTime = 250;
 	const killAnimationTime = 100;
 
@@ -492,10 +493,10 @@ const Lion = (context, lionConstants, setLionBlow, setLionSlay, restartLevel, to
 		} else if (e.key === "k" || e.key === "K") {
 			setLionSlay();
 			lastKillTime = new Date();
-		} else if (e.key === "r" || e.key === "R") {
-			restartLevel();
 		} else if (e.key === "Escape") {
 			togglePauseGame();
+		} else if (e.key.toUpperCase() === "M") {
+			pauseAudio();
 		}
 	};
 
@@ -535,6 +536,18 @@ const Lion = (context, lionConstants, setLionBlow, setLionSlay, restartLevel, to
 			sprite.rotation = -Math.PI;
 		} else if (isKeyPressed("down")) {
 			sprite.rotation = Math.PI / 2;
+		}
+
+		if (isKeyPressed("up") || isKeyPressed("down") || isKeyPressed("left") || isKeyPressed("right")) {
+			if (isMoving === false) {
+				isMoving = true;
+				sprite.animation = WalkSpriteSheet();
+			}
+		} else {
+			if (isMoving === true) {
+				isMoving = false;
+				sprite.animation = IdleSpriteSheet();
+			}
 		}
 	};
 
@@ -1417,8 +1430,8 @@ const Title = (currentLevel, setLevel, changeGameStarted, pauseGame, resumeGame)
 
 	const FireSpriteSheet = () => {
 		const image = fireSprite;
-		const frameWidth = 16;
-		const frameHeight = 16;
+		const frameWidth = 8;
+		const frameHeight = 8;
 		const totalFrameCount = 45;
 		const frameRate = 20;
 		let currentFrame = 0;
@@ -1615,8 +1628,8 @@ const Title = (currentLevel, setLevel, changeGameStarted, pauseGame, resumeGame)
             "K     - Kill humans in range",
             "Space - Extinguish Fire",
 			"Esc   - Pause",
+            "M     - Mute",
 			"",
-            "",
 			"Goal: Find and kill all humans in the dark before 75% of the forest is burnt."
         ];
         context.font = '25px Courier New';
@@ -1965,7 +1978,7 @@ const Main = () => {
 			state.currentLevel = numLevels;
 			level = numLevels;
 		}
-		lion = Lion(context, levelConstants[level - 1].lion, () => setLionBlow(true), () => setLionSlay(true), () => setCurrentLevel(state.currentLevel), togglePauseGame);
+		lion = Lion(context, levelConstants[level - 1].lion, () => setLionBlow(true), () => setLionSlay(true), () => setCurrentLevel(state.currentLevel), togglePauseGame, () => {sound ? stopMusic() : playMusic()});
 		terrain = Terrain(canvas);
 		miniMap = MiniMap(mapSize);
 		humans = Humans(context, levelConstants[level - 1].human);

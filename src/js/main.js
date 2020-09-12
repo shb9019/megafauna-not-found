@@ -87,7 +87,7 @@ const Main = () => {
 			state.currentLevel = numLevels;
 			level = numLevels;
 		}
-		lion = Lion(context, levelConstants[level - 1].lion, () => setLionBlow(true), () => setLionSlay(true), () => setCurrentLevel(state.currentLevel), togglePauseGame);
+		lion = Lion(context, levelConstants[level - 1].lion, () => setLionBlow(true), () => setLionSlay(true), () => setCurrentLevel(state.currentLevel), togglePauseGame, () => {sound ? stopMusic() : playMusic()});
 		terrain = Terrain(canvas);
 		miniMap = MiniMap(mapSize);
 		humans = Humans(context, levelConstants[level - 1].human);
