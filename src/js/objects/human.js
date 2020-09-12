@@ -8,7 +8,6 @@ humanSprite.src = 'public/assets/human.png';
 
 
 export const Humans = (context, humanConstants) => {
-	console.log(humanConstants);
 	const {w1, w2, targetUpdateInterval, speed, minBurnInterval, maxBurnInterval, numHumans} = humanConstants;
 
 	let humans = [];
@@ -119,7 +118,7 @@ export const Humans = (context, humanConstants) => {
 				allProbabilities.push({
 					x,
 					y,
-					probability: totalProbability[x][y]
+					probability: (totalProbability[x][y]).toFixed(4)
 				});
 			}
 		}
@@ -137,6 +136,24 @@ export const Humans = (context, humanConstants) => {
 		});
 	};
 
+	const getNextTarget = (currPos, lionPos) => {
+		let count = 10;
+		let nextPos;
+		while (count--) {
+			nextPos = sortedProbabilities[getRandomIndex(mapSize * mapSize)];
+			if (nextPos.x == currPos.x) continue;
+			let a = ((nextPos.y - currPos.y) / (nextPos.x - currPos.x));
+			let b = -1;
+			let c = - (b * currPos.y) - (a * currPos.x);
+			let x = lionPos.x;
+			let y = lionPos.y;
+			let dist = Math.abs(a * x + b * y + c) / Math.sqrt(a * a + b * b);
+			if (dist >= (tileSizePx * 10)) break;
+		}
+
+		return nextPos;
+	};
+
 	humansInterface.renderHumans = (origin) => {
 		for (let i = 0; i < humans.length; i++) {
 			let angle = Math.atan2(humans[i].x - humans[i].targetX, humans[i].y - humans[i].targetY);
@@ -150,12 +167,12 @@ export const Humans = (context, humanConstants) => {
 		lastTargetUpdateAt = Date.now();
 		generateProbabilityMap(map, lionPos);
 		for (let i = 0; i < humans.length; i++) {
-			let selectedTarget = sortedProbabilities[getRandomIndex(mapSize * mapSize)];
+			let selectedTarget = getNextTarget({x: humans[i].x, y: humans[i].y}, lionPos);
 			let p1 = selectedTarget.probability;
 			let val = mapSize * Math.floor(humans[i].targetX / tileSizePx) + Math.floor(humans[i].targetY / tileSizePx);
 			let currentTarget = allProbabilities[val];
 			let p2 = currentTarget.probability;
-			if ((p1 - p2) > 0.02) {
+			if (Math.abs(p1 - p2) >= 0) {
 				humans[i].targetX = (selectedTarget.x * 25 + 5);
 				humans[i].targetY = (selectedTarget.y * 25 + 5);
 				humans[i].targetProbability = p1;
@@ -165,7 +182,7 @@ export const Humans = (context, humanConstants) => {
 		}
 	}
 
-	humansInterface.updatePositions = () => {
+	humansInterface.updatePositions = (lionPos) => {
 		let burnPositions = [];
 
 		for (let i = 0; i < humans.length; i++) {
@@ -176,18 +193,22 @@ export const Humans = (context, humanConstants) => {
 				else human.y = Math.max(human.y - speed, human.targetY);
 				continue;
 			}
-			if (distance(human, {x: human.targetX, y: human.targetY}) <= speed) {
-				human.x = human.targetX;
-				human.y = human.targetY;
+
+			let targetX = human.targetX;
+			let targetY = human.targetY;
+
+			if (distance(human, {x: targetX, y: targetY}) <= speed) {
+				human.x = targetX;
+				human.y = targetY;
 				continue;
 			}
 
-			const m = Math.abs((human.targetY - human.y) / (human.targetX - human.x));
+			const m = Math.abs((targetY - human.y) / (targetX - human.x));
 			let finalX, finalY;
 			let denom = Math.sqrt(1.0 / (1.0 + m * m));
-			if (human.targetX > human.x) finalX = human.x + (speed * denom);
+			if (targetX > human.x) finalX = human.x + (speed * denom);
 			else finalX = human.x - (speed * denom);
-			if (human.targetY > human.y) finalY = human.y + (m * speed * denom);
+			if (targetY > human.y) finalY = human.y + (m * speed * denom);
 			else finalY = human.y - (m * speed * denom);
 			humans[i].x = finalX;
 			humans[i].y = finalY;

@@ -10,10 +10,6 @@ export const Title = (currentLevel, setLevel, changeGameStarted, pauseGame, resu
 	const titleInterface = {};
 	let clickableRectangles = [];
 
-    const buffer = zzfxM(...deppSong);
-    const sound = zzfxP(...buffer);
-    sound.stop();
-
     const tips = [
         "Look out for new fires in the minimap.",
         "Put out fires as early as possible.",
@@ -441,7 +437,7 @@ export const Title = (currentLevel, setLevel, changeGameStarted, pauseGame, resu
 
     titleInterface.resume = () => {
         if (pageNumber === 5) {
-            pageNumber = GAME_START; sound.start(0);
+            pageNumber = GAME_START;
         }
     };
 

@@ -9,10 +9,15 @@ const fs        = require('fs');
 
 module.exports = () => {
   gulp.task( 'zip', [ 'build', 'template' ], () => {
-    return gulp.src(['./dist/index.min.html', './dist/public/assets/*'])
-      .pipe(rename((path) => { if (path.extname == ".html") path.basename = "index";}))
-      .pipe( zip('game.zip') )
-      .pipe( gulp.dest('dist') );
+    return gulp.src(['./dist/index.min.html', './dist/public/**'])
+      .pipe(rename((path) => {
+        if (path.extname == ".html") path.basename = "index";
+        if (path.dirname == "assets") {
+          path.dirname = "public/assets";
+        }
+      }))
+      .pipe(zip('game.zip'))
+      .pipe(gulp.dest('dist'));
   });
 
   gulp.task( 'report', [ 'zip' ], done => {

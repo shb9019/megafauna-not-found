@@ -5,7 +5,7 @@ import { Humans } from './objects/human';
 import { MiniMap } from './objects/minimap';
 import { Shadow } from './objects/shadow';
 import { Title } from './objects/title';
-import { mapSize, tileSizePx, initialCameraPos, levelConstants } from './constants';
+import { mapSize, tileSizePx, initialCameraPos, levelConstants, deppSong } from './constants';
 
 const canvas = document.getElementById('main');
 const context = canvas.getContext('2d');
@@ -14,6 +14,22 @@ canvas.height = window.innerHeight;
 
 const Main = () => {
 	const origin = copy(initialCameraPos);
+
+    const buffer = zzfxM(...deppSong);
+    let sound = null;
+
+    const playMusic = () => {
+    	stopMusic();
+    	sound = zzfxP(...buffer);
+    	sound.loop = true;
+    };
+
+    const stopMusic = () => {
+		if (sound !== null) {
+			sound.stop();
+			sound = null;
+		}
+    };
 
 	const props = {
 		canvas,
@@ -81,7 +97,10 @@ const Main = () => {
 	const changeIsGameStarted = (value) => {
 		state.isGameStarted = value;
 		if (value === true) {
+			playMusic();
 			resetAll(state.currentLevel);
+		} else {
+			stopMusic();
 		}
 	}
 
@@ -92,11 +111,13 @@ const Main = () => {
 	const pauseGame = () => {
 		state.gamePaused = true;
 		title.pause();
+		stopMusic();
 	};
 
 	const resumeGame = () => {
 		state.gamePaused = false;
 		title.resume();
+		playMusic();
 	};
 
 	let shadow = Shadow();
@@ -106,6 +127,7 @@ const Main = () => {
 		if (state.gamePaused) {
 			resumeGame();
 		} else {
+			sound.stop();
 			pauseGame();
 		}
 	};
@@ -130,7 +152,7 @@ const Main = () => {
 			}
 
 			humans.updateTargets(map, lion.tilePosition());
-			let burnPositions = humans.updatePositions();
+			let burnPositions = humans.updatePositions(lion.absPosition());
 			terrain.handleHumanBurn(burnPositions);
 			if (humans.getNumAliveHumans() === 0) {
 				changeIsGameStarted(false);

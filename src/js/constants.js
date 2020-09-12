@@ -65,10 +65,10 @@ export const levelConstants = [{
 		speed: 10.0
 	},
 	human: {
-		w1: 0.01,
-		w2: 0.99,
-		speed: 1.0,
-		targetUpdateInterval: 3000,
+		w1: 0.001,
+		w2: 0.999,
+		speed: 4.0,
+		targetUpdateInterval: 5000,
 		minBurnInterval: 3000,
 		maxBurnInterval: 8000,
 		numHumans: 10
@@ -80,26 +80,26 @@ export const levelConstants = [{
 		speed: 10.0
 	},
 	human: {
-		w1: 0.5,
-		w2: 0.5,
-		speed: 10.0,
+		w1: 0.1,
+		w2: 0.9,
+		speed: 8.0,
 		targetUpdateInterval: 3000,
-		minBurnInterval: 2000,
-		maxBurnInterval: 10000,
+		minBurnInterval: 1000,
+		maxBurnInterval: 3000,
 		numHumans: 5
 	}
 }, {
 	lion: {
-		extinguishRechargeTime: 3000,
-		fireDamage: 6,
+		extinguishRechargeTime: 5000,
+		fireDamage: 8,
 		speed: 10.0
 	},
 	human: {
-		w1: 0.4,
-		w2: 0.6,
-		speed: 10.0,
-		targetUpdateInterval: 3000,
-		minBurnInterval: 1000,
+		w1: 0.8,
+		w2: 0.2,
+		speed: 12.0,
+		targetUpdateInterval: 1000,
+		minBurnInterval: 5000,
 		maxBurnInterval: 10000,
 		numHumans: 8
 	}
@@ -110,13 +110,13 @@ export const levelConstants = [{
 		speed: 10.0
 	},
 	human: {
-		w1: 0.8,
-		w2: 0.2,
+		w1: 0.5,
+		w2: 0.5,
 		speed: 14.0,
-		targetUpdateInterval: 3000,
+		targetUpdateInterval: 1000,
 		minBurnInterval: 1000,
-		maxBurnInterval: 10000,
-		numHumans: 10
+		maxBurnInterval: 8000,
+		numHumans: 1
 	}
 }, {
 	lion: {
@@ -125,12 +125,12 @@ export const levelConstants = [{
 		speed: 10.0
 	},
 	human: {
-		w1: 0.5,
-		w2: 0.5,
+		w1: 0.2,
+		w2: 0.8,
 		speed: 15.0,
-		targetUpdateInterval: 3000,
-		minBurnInterval: 5000,
-		maxBurnInterval: 10000,
+		targetUpdateInterval: 1000,
+		minBurnInterval: 1000,
+		maxBurnInterval: 5000,
 		numHumans: 15
 	}
 }];

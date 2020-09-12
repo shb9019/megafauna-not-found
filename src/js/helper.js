@@ -117,7 +117,7 @@ const normalRandomScaled = (mean, stddev) => {
 export const getRandomIndex = (totalSize) => {
 	let randomIndex;
 	do {
-		randomIndex = normalRandomScaled(0, 0.1) * totalSize;
+		randomIndex = normalRandomScaled(0, 0.15) * totalSize;
 	} while (randomIndex < 0 || randomIndex >= totalSize);
 	return Math.floor(randomIndex);
 };
